@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import './custom.scss';
 
 import firebase from "firebase/app";
 // Add the Firebase services that you want to use
