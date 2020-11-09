@@ -1,25 +1,47 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { NavLink, Redirect, Route, Router, Switch } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+
+import NewPost from './NewPost';
+import RoomList from './RoomList';
 
 function App() {
+  const history = createBrowserHistory();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router history={history}>
+      <div className="App">
+        <header className="App-header">
+          <nav>
+            <ul>
+              <li>
+                <NavLink to='/list'>
+                  View Lists
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to='/new-post'>
+                  Room
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <main>
+          <Switch>
+            <Route exact path='/'>
+              <Redirect to='/list' />
+            </Route>
+            <Route path='/list'>
+              <RoomList />
+            </Route>
+            <Route path='/new-post'>
+              <NewPost />
+            </Route>
+          </Switch>
+        </main>
+      </div>
+    </Router>
   );
 }
 
