@@ -53,28 +53,30 @@ export default function Settings(props: IProps) {
     }
 
     return (
-        <Form className="w-75 m-auto" onSubmit={handleSubmit}>
+        <Form className="px-3 m-auto d-flex flex-column align-content-start" onSubmit={handleSubmit}>
             {saveStatus === 'success' && <Alert variant='success'>Successfully saved!</Alert>}
             {saveStatus === 'error' && <Alert variant='error'>Something went wrong.</Alert>}
             <Form.Label>Games you're interested in (separate with comma):</Form.Label>
             <Form.Control type='text' value={user.games?.join(',')} name="games" onChange={handleChange} />
             <Form.Label>PSN username:</Form.Label>
-            <Form.Control type='text' value={user.psn} name="psn" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={user.psn} name="psn" onChange={handleChange} />
             <Form.Label>Xbox username:</Form.Label>
-            <Form.Control type='text' value={user.xbox} name="xbox" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={user.xbox} name="xbox" onChange={handleChange} />
             <Form.Label>Switch friendcode:</Form.Label>
-            <Form.Control type='text' value={user.switch} name="switch" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={user.switch} name="switch" onChange={handleChange} />
             <Form.Label>PC username:</Form.Label>
-            <Form.Control type='text' value={user.pc} name="pc" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={user.pc} name="pc" onChange={handleChange} />
             <Form.Label>Steam username:</Form.Label>
-            <Form.Control type='text' value={user.steam} name="steam" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={user.steam} name="steam" onChange={handleChange} />
             <Form.Label>Battle.net username:</Form.Label>
-            <Form.Control type='text' value={user.battlenet} name="battlenet" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={user.battlenet} name="battlenet" onChange={handleChange} />
             <Form.Label>Epic username:</Form.Label>
-            <Form.Control type='text' value={props.user.epic} name="epic" onChange={handleChange} />
+            <Form.Control className="w-50" type='text' value={props.user.epic} name="epic" onChange={handleChange} />
             <Form.Label>Origin username:</Form.Label>
-            <Form.Control type='text' value={user.origin} name="origin" onChange={handleChange} />
-            <Button variant="primary" type="submit">Save</Button>
+            <Form.Control className="w-50" type='text' value={user.origin} name="origin" onChange={handleChange} />
+            <Form.Group className="align-self-center mt-3">
+                <Button variant="primary" type="submit">Save</Button>
+            </Form.Group>
         </Form>
     );
 }

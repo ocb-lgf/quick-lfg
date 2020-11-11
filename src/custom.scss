@@ -1,8 +1,48 @@
-// Import Bootstrap and its default variables
-@import '~bootstrap/scss/bootstrap.scss';
+@media (max-width: 576px) {
+  html {
+    margin-bottom: 5rem;
+  }
+}
 
-@media (max-width: 576px){
-    html {
-        margin-bottom: 5rem;
-    }
+$darkest: #1e2329;
+$gunmetal: #2d343b;
+$border: #3e4c58;
+$middle: #779ba5;
+$light: #eeeeee;
+$spice: #d45b2b;
+
+$body-bg: $gunmetal;
+$body-color: $light;
+
+$theme-colors: (
+  primary: $spice,
+  dark: $darkest,
+);
+
+// Import Bootstrap and its default variables
+@import "~bootstrap/scss/bootstrap.scss";
+
+.list-group-item,
+.list-group-item-action {
+  background-color: $gunmetal;
+  border: 1px solid $border;
+  padding-bottom: 1rem;
+  color: $light;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: $border;
+    color: $light;
+  }
+}
+
+/* Some trickery */
+label[for="ui-sign-in-name-input"] {
+  visibility: hidden !important;
+}
+
+label[for="ui-sign-in-name-input"]::before {
+  content: "Display Name";
+  visibility: visible;
 }

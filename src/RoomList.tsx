@@ -3,8 +3,8 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { Room } from "./types"
-import { Col, Container, Row } from 'react-bootstrap';
+import { Room } from "./types";
+import { Col, Container, Row, ListGroup, ListGroupItem } from 'react-bootstrap';
 
 
 export default function RoomList() {
@@ -71,7 +71,6 @@ export default function RoomList() {
     let currentTime = new Date();
     let expireTime = new Date(e.seconds * 1000);
     const ms = (Date.parse(expireTime as unknown as string) - Date.parse(currentTime as unknown as string));
-    console.log(Date.parse(expireTime as unknown as string) - Date.parse(currentTime as unknown as string));
     let text;
     let timeNum;
 
@@ -108,34 +107,34 @@ export default function RoomList() {
     } else return ("" + timeNum + " " + text + " left.");
   }
 
-  const list = rooms.map((room: Room) => <li className="list-group-item">
-    <Container>
-      <Row>
-        <Col xs={2} className="d-flex justify-content-start align-items-center">
-          <div>
-          <img src="unknown.png" /><br/>
-          {room.platform}
-          </div>
-        </Col>
-        <Col>
-          <Row>
-            <Col xs={8} className="d-flex justify-content-start text-left font-weight-bold">{room.game}</Col>
-            <Col className="d-flex justify-content-end">{timeExpires(room.timeLimit)}</Col>
-          </Row>
-          <Row>
-            <Col xs={8} className="d-flex justify-content-start text-left font-weight-lighter font-italic">{room.title}</Col>
-            <Col className="d-flex justify-content-end">{room.username}</Col>
-          </Row>
-          <Row>
-            <Col xs={8} className="d-flex justify-content-start text-left">Slots: {room.filledSlots.length} of {room.totalSlots}</Col>
-            <Col className="d-flex justify-content-end">{timeNumber(room.time)} {timeText(room.time)} ago.</Col>
-          </Row>
-        </Col>
-      </Row>
-    </Container>
-  </li>)
+  const list = rooms.map((room: Room) => (
+    <ListGroupItem key={room.uid} action>
+      <Container>
+        <Row>
+          <Col xs={2} className="d-flex justify-content-start align-items-center">
+            <div>
+              <img src="unknown.png" alt="" /><br />
+              {room.platform}
+            </div>
+          </Col>
+          <Col>
+            <Row>
+              <Col xs={8} className="d-flex justify-content-start text-left font-weight-bold">{room.game}</Col>
+              <Col className="d-flex justify-content-end">{timeExpires(room.timeLimit)}</Col>
+            </Row>
+            <Row>
+              <Col xs={8} className="d-flex justify-content-start text-left font-weight-lighter font-italic">{room.title}</Col>
+              <Col className="d-flex justify-content-end">{room.username}</Col>
+            </Row>
+            <Row>
+              <Col xs={8} className="d-flex justify-content-start text-left">Slots: {room.filledSlots.length} of {room.totalSlots}</Col>
+              <Col className="d-flex justify-content-end">{timeNumber(room.time)} {timeText(room.time)} ago.</Col>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+    </ListGroupItem>
+  ));
 
-  return <div>
-    {<ul className="list-group">{list}</ul>}
-  </div>;
+  return <ListGroup>{list}</ListGroup>;
 }

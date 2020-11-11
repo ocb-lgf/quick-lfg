@@ -46,7 +46,7 @@ function App() {
                     :
                     <Nav.Item>
                         <Nav.Link as={NavLink} to='/login' activeClassName="active">
-                            Sign in
+                            Log in
                             </Nav.Link>
                     </Nav.Item>
                 }
@@ -54,7 +54,6 @@ function App() {
         </Navbar>
     );
 
-    // console.log(width);
     return (
         <Router history={history}>
             <div className="App">
