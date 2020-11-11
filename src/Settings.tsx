@@ -31,7 +31,7 @@ export default function Settings(props: IProps) {
         if (name === 'games') {
             setUser({
                 ...user,
-                [name]: value.split(',').map((g: string) => g.trim())
+                [name]: value.split(',')
             });
         } else {
             setUser({
@@ -44,9 +44,11 @@ export default function Settings(props: IProps) {
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setSaveStatus('');
+
+        const games = user.games?.map((g: string) => g.trim());
         if (props.docId) {
             const collection = firebase.firestore().collection('users');
-            collection.doc(props.docId).set({ ...user }, { merge: true })
+            collection.doc(props.docId).set({ ...user, games: games }, { merge: true })
                 .then(_r => setSaveStatus('success'))
                 .catch(_e => setSaveStatus('error'));
         }
