@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import { User } from './types';
 import firebase from 'firebase/app';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Alert } from 'react-bootstrap';
 
 interface IProps {
     user: User;
@@ -9,6 +9,7 @@ interface IProps {
 }
 
 export default function Settings(props: IProps) {
+    const [saveStatus, setSaveStatus] = useState<string>();
     const [user, setUser] = useState<User>({
         games: [''],
         psn: '',
@@ -40,17 +41,21 @@ export default function Settings(props: IProps) {
         }
     }
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        setSaveStatus('');
         if (props.docId) {
             const collection = firebase.firestore().collection('users');
-            collection.doc(props.docId).set({ ...user }, { merge: true });
+            collection.doc(props.docId).set({ ...user }, { merge: true })
+                .then(_r => setSaveStatus('success'))
+                .catch(_e => setSaveStatus('error'));
         }
     }
 
     return (
-        // <div>Hello {firebase.auth().currentUser?.displayName}</div>
         <Form className="w-75 m-auto" onSubmit={handleSubmit}>
+            {saveStatus === 'success' && <Alert variant='success'>Successfully saved!</Alert>}
+            {saveStatus === 'error' && <Alert variant='error'>Something went wrong.</Alert>}
             <Form.Label>Games you're interested in (separate with comma):</Form.Label>
             <Form.Control type='text' value={user.games?.join(',')} name="games" onChange={handleChange} />
             <Form.Label>PSN username:</Form.Label>
