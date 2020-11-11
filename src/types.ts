@@ -12,11 +12,16 @@ export interface Room {
 
 export interface User {
     uid: string;
-    username: string;
-    profilePic?: string;
-    platforms: platform[];
-    games: string[];
+    games?: string[];
     blockedPlayers?: string[];
+    psn?: string;
+    xbox?: string;
+    switch?: string;
+    steam?: string;
+    pc?: string;
+    battlenet?: string;
+    epic?: string;
+    origin?: string;
 }
 
-export type platform = 'PSN' | 'Xbox' | 'Switch' | 'PC' | 'Steam' | 'Battle.net' | 'Epic' | 'Origin';
+export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'steam' | 'battlenet' | 'epic' | 'origin';

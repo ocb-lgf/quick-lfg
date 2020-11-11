@@ -1,2 +1,8 @@
 // Import Bootstrap and its default variables
 @import '~bootstrap/scss/bootstrap.scss';
+
+@media (max-width: 576px){
+    html {
+        margin-bottom: 5rem;
+    }
+}

@@ -37,3 +37,13 @@
     transform: rotate(360deg);
   }
 }
+
+/* Some trickery */
+label[for="ui-sign-in-name-input"] {
+  visibility: hidden !important;
+}
+
+label[for="ui-sign-in-name-input"]::Before {
+  content: 'Display Name';
+  visibility: visible;
+}
