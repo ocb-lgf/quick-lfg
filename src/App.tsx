@@ -10,9 +10,11 @@ import Settings from './Settings';
 import { User } from './types';
 import Login from './Login';
 
+const history = createBrowserHistory();
+
 function App() {
-    const history = createBrowserHistory();
     const [user, setUser] = useState<User>();
+    const [docId, setDocId] = useState<string>();
 
     return (
         <Router history={history}>
@@ -56,11 +58,11 @@ function App() {
                         </Route>
                         <Route path='/settings'>
                             {user &&
-                                <Settings user={user} />
+                                <Settings user={user} docId={docId} />
                             }
                         </Route>
                         <Route path='/login'>
-                            <Login setUser={setUser} />
+                            <Login setUser={setUser} setDocId={setDocId} />
                         </Route>
                     </Switch>
                 </main>
