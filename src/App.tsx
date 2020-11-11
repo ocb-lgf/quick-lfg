@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import { NavLink, Redirect, Route, Router, Switch } from 'react-router-dom';
+import { Link, Redirect, Route, Router, Switch } from 'react-router-dom';
+import { Nav, Navbar } from 'react-bootstrap';
 import { createBrowserHistory } from 'history';
 // import firebase from 'firebase/app';
 
@@ -20,30 +21,34 @@ function App() {
         <Router history={history}>
             <div className="App">
                 <header className="App-header">
-                    <nav>
-                        <ul>
-                            <li>
-                                <NavLink to='/list'>
-                                    View Lists
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to='/new-post'>
+                    <Navbar variant="dark" className="justify-content-center">
+                        <Navbar.Brand className="text-white" >LFG</Navbar.Brand>
+                        <Nav>
+                            <Nav.Item>
+                                <Nav.Link as={Link} to='/list'>
+                                    LFG List
+                                </Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link as={Link} to='/new-post'>
                                     Room
-                                </NavLink>
-                            </li>
+                                </Nav.Link>
+                            </Nav.Item>
                             {user ?
-                                (<li>
-                                    <NavLink to='/settings'>
+                                <Nav.Item>
+                                    <Nav.Link as={Link} to='/settings'>
                                         Settings
-                                </NavLink>
-                                </li>) : (<li>
-                                    <NavLink to='/login'>
+                                    </Nav.Link>
+                                </Nav.Item>
+                                :
+                                <Nav.Item>
+                                    <Nav.Link as={Link} to='/login'>
                                         Sign in
-                                    </NavLink>
-                                </li>)}
-                        </ul>
-                    </nav>
+                                    </Nav.Link>
+                                </Nav.Item>
+                            }
+                        </Nav>
+                    </Navbar>
                 </header>
                 <main>
                     <Switch>
