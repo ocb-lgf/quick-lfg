@@ -24,20 +24,7 @@ export default function Login(props: IProps) {
                     const newUser: User = { uid: authResult.user.uid };
                     collection.add(newUser);
                 }
-                collection.where('uid', '==', authResult.user.uid).get()
-                    .then(qSnapshot => {
-                        qSnapshot.forEach(doc => {
-                            const id = doc.id;
-                            props.setDocId(id);
-                            const user: User = {
-                                uid: authResult.user.uid,
-                                ...doc.data()
-                            };
-                            props.setUser(user);
-                            history.push('/settings');
-                        });
-                    }
-                    );
+                history.push('/settings');
                 return false;
             }
         },

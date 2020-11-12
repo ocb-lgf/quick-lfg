@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import { NavLink, Redirect, Route, Router, Switch } from 'react-router-dom';
 import { Nav, Navbar } from 'react-bootstrap';
 import { createBrowserHistory } from 'history';
+import firebase from 'firebase/app';
 
 import NewPost from './NewPost';
 import RoomList from './RoomList';
@@ -17,6 +18,30 @@ function App() {
     const [user, setUser] = useState<User>();
     const [docId, setDocId] = useState<string>();
     const { width } = useWindowSize();
+
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged(u => {
+            if (u) {
+                const collection = firebase.firestore().collection('users');
+                collection.where('uid', '==', u.uid).get()
+                    .then(qSnapshot => {
+                        qSnapshot.forEach(doc => {
+                            const id = doc.id;
+                            setDocId(id);
+                            const user: User = {
+                                uid: u.uid,
+                                ...doc.data()
+                            };
+                            setUser(user);
+                        });
+                    });
+            }
+            else {
+                setUser(undefined);
+                history.push('/');
+            }
+        });
+    }, []);
 
     const navBar = (
         <Navbar
@@ -38,16 +63,23 @@ function App() {
                         </Nav.Link>
                 </Nav.Item>
                 {user ?
-                    <Nav.Item>
-                        <Nav.Link as={NavLink} to='/settings' activeClassName="active">
-                            Settings
-                            </Nav.Link>
-                    </Nav.Item>
+                    <>
+                        <Nav.Item>
+                            <Nav.Link as={NavLink} to='/settings' activeClassName="active">
+                                Settings
+                        </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link onClick={() => firebase.auth().signOut()}>
+                                Log out
+                        </Nav.Link>
+                        </Nav.Item>
+                    </>
                     :
                     <Nav.Item>
                         <Nav.Link as={NavLink} to='/login' activeClassName="active">
                             Log in
-                            </Nav.Link>
+                        </Nav.Link>
                     </Nav.Item>
                 }
             </Nav>
