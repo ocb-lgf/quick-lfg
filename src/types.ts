@@ -24,4 +24,4 @@ export interface User {
     origin?: string;
 }
 
-export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'steam' | 'battlenet' | 'epic' | 'origin';
+export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'steam' | 'battlenet' | 'epic' | 'origin' | 'none';
