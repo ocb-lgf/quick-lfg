@@ -5,13 +5,10 @@ import "firebase/firestore";
 import "firebase/storage";
 import { Room } from "./types"
 import { platform } from 'os';
-import { ButtonGroup, Form } from 'react-bootstrap';
+import { Alert, ButtonGroup, Form } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 
 export default function NewPost() {
-  const [post, setPost] = useState(); {
-
-  }
   const date = new Date();
   const [room, setRoom] = useState<Room>({
     uid: '',
@@ -23,124 +20,142 @@ export default function NewPost() {
     timeLimit: date,
     totalSlots: 0,
     filledSlots: ['']
-  }); 
+  });
 
   function handleChange(event: ChangeEvent<any>) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
     setRoom({
-      ...room, 
+      ...room,
       [name]: value
     });
   }
 
-
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
- /*   const roomCreation = (room);
-    if () {
-      const collection = firebase.firestore().collection('rooms');
-      collection.doc(props.post).set({ ...post, room: room }, { merge: true })
-        .then(_r => setPost('success'))
-        .catch(_e => setPost('error'));
-    } */
-  } 
+    /* const roomCreation = <Room>;
+     if () {
+       const collection = firebase.firestore().collection('rooms');
+       collection.doc().set({ ...room }, { merge: true })
+         .then(_r => setPost('success'))
+         .catch(_e => setPost('error'));
+     } */
+  }
 
 
-/* of type Room, handlesubmit, object */
-console.log(room);
-return (
-  <>
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="formBasicTitle">
-        <Form.Label>Enter a title</Form.Label>
-        <Form.Control type="text" name="title" value={room.title} 
-        onChange={handleChange}
-        placeholder="title" />
-        <Form.Text className="text-muted">
-          Enter the title of your post.
+  /* of type Room, handlesubmit, object */
+  console.log(room);
+  function AlertDismissibleExample() {
+    const [show, setShow] = useState(true);
+
+    if (show) {
+      return (
+        <Alert variant="success" onClose={() => setShow(false)} dismissible>
+          <Alert.Heading>Make sure you don't have an ongoing party open!</Alert.Heading>
+          <p>
+            You can only have one party open, make sure you don't have an existing LFG open!
+          </p>
+        </Alert>
+      );
+    }
+    return <Button onClick={() => setShow(true)}>Show Alert</Button>;
+  }
+
+  return (
+
+    <>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formBasicTitle">
+          <Form.Label>Enter a title</Form.Label>
+          <Form.Control type="text" name="title" value={room.title}
+            onChange={handleChange}
+            placeholder="title" />
+          <Form.Text className="text-muted">
+            Enter the title of your post.
     </Form.Text>
-      </Form.Group>
+        </Form.Group>
 
-      <Form.Group controlId="formBasicName">
-        <Form.Label>Enter your IGN name</Form.Label>
-        <Form.Control type="text" name="username" value={room.username} 
-        onChange={handleChange}
-        placeholder="username" />
-        <Form.Text className="text-muted">
-          Enter the your In Game Name.
+        <Form.Group controlId="formBasicName">
+          <Form.Label>Enter your IGN name</Form.Label>
+          <Form.Control type="text" name="username" value={room.username}
+            onChange={handleChange}
+            placeholder="username" />
+          <Form.Text className="text-muted">
+            Enter the your In Game Name.
     </Form.Text>
-      </Form.Group>
+        </Form.Group>
 
-      <Form.Group controlId="formBasicGame">
-        <Form.Label>Enter a game</Form.Label>
-        <Form.Control type="text" name="game" value={room.game}
-        onChange={handleChange}
-        placeholder="game" />
-        <Form.Text className="text-muted">
-          Enter the name of your game.
+        <Form.Group controlId="formBasicGame">
+          <Form.Label>Enter a game</Form.Label>
+          <Form.Control type="text" name="game" value={room.game}
+            onChange={handleChange}
+            placeholder="game" />
+          <Form.Text className="text-muted">
+            Enter the name of your game.
     </Form.Text>
-      </Form.Group>
+        </Form.Group>
 
-      <Form.Group controlId="formBasicPlatform">
-        <Form.Label>Platform</Form.Label>
-        <Form.Control type="text" name="username" value={room.platform} 
-        onChange={handleChange}
-        placeholder="platform" />
-        <Form.Text className="text-muted">
-          
-    </Form.Text>
-      </Form.Group>
+        <Form.Group controlId="timeForm.ControlSelect1">
+          <Form.Label>Platform</Form.Label>
+          <Form.Control as="select" type="text"
+            onChange={handleChange}
+            name="platform">
+            <option>{platform}</option>
+          </Form.Control>
+        </Form.Group>
 
-      <Form.Group controlId="timeForm.ControlInput1">
-        <Form.Label>Creation date</Form.Label>
-        <Form.Control type="number"
-        onChange={handleChange}
-        placeholder="time" />
-      </Form.Group>
-      <Form.Group controlId="timeForm.ControlSelect1">
-        <Form.Label>Time select</Form.Label>
-        <Form.Control as="select" type="number"
-        onChange={handleChange}
-        name="timelimit">
-          <option>15</option>
-          <option>30</option>
-          <option>45</option>
-          <option>60</option>
-        </Form.Control>
-      </Form.Group>
+        <Form.Group controlId="timeForm.ControlInput1">
+          <Form.Label>Creation date</Form.Label>
+          <Form.Control type="number"
+            onChange={handleChange}
+            placeholder="time" />
+        </Form.Group>
+        <Form.Group controlId="timeForm.ControlSelect1">
+          <Form.Label>Time select</Form.Label>
+          <Form.Control as="select" type="number"
+            onChange={handleChange}
+            name="timelimit">
+            <option>15</option>
+            <option>30</option>
+            <option>45</option>
+            <option>60</option>
+          </Form.Control>
+        </Form.Group>
 
-      <Form.Group controlId="partyForm.ControlInput1">
-        <Form.Label>Size of party</Form.Label>
-        <Form.Control type="number" 
-        onChange={handleChange}
-        placeholder="party" />
-      </Form.Group>
-      <Form.Group controlId="partyForm.ControlSelect1">
-      </Form.Group>
+        <Form.Group controlId="partyForm.ControlInput1">
+          <Form.Label>Size of party</Form.Label>
+          <Form.Control type="number"
+            onChange={handleChange}
+            placeholder="party" />
+        </Form.Group>
+        <Form.Group controlId="partyForm.ControlSelect1">
+        </Form.Group>
 
-      <div>
-        <ButtonGroup className="mr-2" aria-label="Button group">
-          <>
-            <Button variant="outline-success"
-              className="createRoom"
-              size="lg"
-              type="submit"
-              active>New Party
+        <div>
+          <ButtonGroup className="mr-2" aria-label="Button group">
+            <>
+              <Button variant="outline-success"
+                className="createRoom"
+                size="lg"
+                type="submit"
+                active>New Party
             </Button>
 
-            <Button variant="outline-danger"
-              className="deleteRoom"
-              size="lg"
-              type="submit"
-              active>Delete
+              <Button variant="outline-danger"
+                className="deleteRoom"
+                size="lg"
+                type="submit"
+                active>Delete
             </Button>
-          </>
-        </ButtonGroup>
-      </div>
-    </Form>
-  </>
-);
-} 
+
+            </>
+          </ButtonGroup>
+        </div>
+      </Form>
+      <AlertDismissibleExample />
+    </>
+  );
+}
+
