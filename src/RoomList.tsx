@@ -4,10 +4,12 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
 import { Room } from "./types";
-import { Col, Container, Row, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Col, Container, Row, ListGroup, ListGroupItem, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 
 
 export default function RoomList() {
+  const history = useHistory();
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
@@ -136,5 +138,11 @@ export default function RoomList() {
     </ListGroupItem>
   ));
 
-  return <ListGroup>{list}</ListGroup>;
+  return (
+    <>
+      <ListGroup>
+        {list}
+      </ListGroup>
+      <Button className="fab" onClick={() => history.push('/new-post')}>Post New</Button>
+    </>);
 }
