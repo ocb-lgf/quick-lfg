@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, useState} from 'react';
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
@@ -8,7 +8,6 @@ import { Alert, ButtonGroup, Form } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 import { useHistory } from 'react-router';
 import { uuid } from 'uuidv4';
-import { platform } from 'os';
 
 interface IProps {
   user: User;
