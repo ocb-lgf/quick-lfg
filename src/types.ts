@@ -1,11 +1,13 @@
+import firebase from 'firebase/app';
+
 export interface Room {
     uid: string;
     username: string;
     title: string;
     game: string;
     platform: platform;
-    time: Date;
-    timeLimit?: Date;
+    time: firebase.firestore.Timestamp;
+    timeLimit?: firebase.firestore.Timestamp;
     totalSlots: number;
     filledSlots: string[];
 }

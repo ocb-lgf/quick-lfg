@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/storage";
 import { Room } from "./types";
 import { Col, Container, Row, ListGroup, ListGroupItem, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 
+interface IProps {
+  openInstance: (room: Room) => void;
+}
 
-export default function RoomList() {
+export default function RoomList(props: IProps) {
   const history = useHistory();
   const [rooms, setRooms] = useState<Room[]>([]);
 
@@ -110,7 +110,7 @@ export default function RoomList() {
   }
 
   const list = rooms.map((room: Room) => (
-    <ListGroupItem key={room.uid} action>
+    <ListGroupItem key={room.uid} action onClick={() => props.openInstance(room)}>
       <Container>
         <Row>
           <Col xs={2} className="d-flex justify-content-start align-items-center">
