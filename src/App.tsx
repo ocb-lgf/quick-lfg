@@ -99,7 +99,9 @@ function App() {
                             <RoomList />
                         </Route>
                         <Route path='/new-post'>
-                            <NewPost />
+                            {user && firebase.auth().currentUser &&
+                            <NewPost user={user} />
+                            }
                         </Route>
                         <Route path='/settings'>
                             {user &&
