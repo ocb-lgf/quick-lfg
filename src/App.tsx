@@ -8,40 +8,41 @@ import firebase from 'firebase/app';
 import NewPost from './NewPost';
 import RoomList from './RoomList';
 import Settings from './Settings';
-import { User } from './types';
+import { User, Room } from './types';
 import Login from './Login';
 import useWindowSize from './useWindowSize';
+import Instance from './Instance';
 
 const history = createBrowserHistory();
 
 function App() {
     const [user, setUser] = useState<User>();
-    const [docId, setDocId] = useState<string>();
+    const [room, setRoom] = useState<Room>();
+    const [userDocId, setUserDocId] = useState<string>();
     const { width } = useWindowSize();
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
             if (u) {
                 const collection = firebase.firestore().collection('users');
-                collection.where('uid', '==', u.uid).get()
-                    .then(qSnapshot => {
-                        qSnapshot.forEach(doc => {
-                            const id = doc.id;
-                            setDocId(id);
-                            const user: User = {
-                                uid: u.uid,
-                                ...doc.data()
-                            };
-                            setUser(user);
-                        });
-                    });
-            }
-            else {
+                collection.doc(u.uid).get().then(s => {
+                    const user: User = {
+                        uid: u.uid,
+                        ...s.data()
+                    };
+                    setUser(user);
+                });
+            } else {
                 setUser(undefined);
                 history.push('/');
             }
         });
     }, []);
+
+    function openInstance(room: Room) {
+        setRoom(room);
+        history.push('/instance/' + room.uid);
+    }
 
     const navBar = (
         <Navbar
@@ -60,7 +61,7 @@ function App() {
                 <Nav.Item>
                     <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
                         Room
-                        </Nav.Link>
+                    </Nav.Link>
                 </Nav.Item>
                 {user ?
                     <>
@@ -96,20 +97,23 @@ function App() {
                             <Redirect to='/list' />
                         </Route>
                         <Route path='/list'>
-                            <RoomList />
+                            <RoomList openInstance={openInstance} />
                         </Route>
                         <Route path='/new-post'>
                             {user &&
                             <NewPost user={user} />
                             }
                         </Route>
+                        <Route path='/instance/:id'>
+                            <Instance room={room} user={user} />
+                        </Route>
                         <Route path='/settings'>
                             {user &&
-                                <Settings user={user} docId={docId} />
+                                <Settings user={user} docId={userDocId} />
                             }
                         </Route>
                         <Route path='/login'>
-                            <Login setUser={setUser} setDocId={setDocId} />
+                            <Login setDocId={setUserDocId} />
                         </Route>
                     </Switch>
                 </main>
