@@ -23,7 +23,7 @@ export default function NewPost(props: IProps) {
   const id: string = uuid();
 
   const [room, setRoom] = useState<Room>({
-    uid: '',
+    rid: '',
     username: firebase.auth().currentUser?.displayName || '',
     title: '',
     game: '',

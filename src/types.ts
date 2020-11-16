@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 
 export interface Room {
-    uid: string;
+    rid: string;
     username: string;
     title: string;
     game: string;

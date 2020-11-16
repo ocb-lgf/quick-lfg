@@ -83,7 +83,7 @@ export default function Instance(props: IProps) {
                 ...room,
                 filledSlots: room.filledSlots
             });
-            roomsCollection.doc(room.uid).set(room, { merge: true });
+            roomsCollection.doc(room.rid).set(room, { merge: true });
         }
     }
 
@@ -94,7 +94,7 @@ export default function Instance(props: IProps) {
                 ...room,
                 filledSlots: room.filledSlots,
             });
-            roomsCollection.doc(room.uid).set(room, { merge: true });
+            roomsCollection.doc(room.rid).set(room, { merge: true });
         }
     }
 
@@ -105,7 +105,7 @@ export default function Instance(props: IProps) {
                 ...room,
                 filledSlots: room.filledSlots
             });
-            roomsCollection.doc(room.uid).set(room, { merge: true });
+            roomsCollection.doc(room.rid).set(room, { merge: true });
         }
     }
 

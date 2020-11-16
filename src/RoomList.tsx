@@ -107,7 +107,7 @@ export default function RoomList() {
   }
 
   const list = rooms.map((room: Room) => (
-    <Link key={room.uid} to={'/instance/' + room.uid}>
+    <Link key={room.rid} to={'/instance/' + room.rid}>
       <ListGroupItem action >
         <Container>
           <Row>
