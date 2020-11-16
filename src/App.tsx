@@ -8,7 +8,7 @@ import firebase from 'firebase/app';
 import NewPost from './NewPost';
 import RoomList from './RoomList';
 import Settings from './Settings';
-import { User, Room } from './types';
+import { User } from './types';
 import Login from './Login';
 import useWindowSize from './useWindowSize';
 import Instance from './Instance';
@@ -16,10 +16,9 @@ import Instance from './Instance';
 const history = createBrowserHistory();
 
 function App() {
-    const [user, setUser] = useState<User>();
-    const [room, setRoom] = useState<Room>();
-    const [userDocId, setUserDocId] = useState<string>();
     const { width } = useWindowSize();
+    const [user, setUser] = useState<User>();
+    const [userDocId, setUserDocId] = useState<string>();
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
@@ -28,6 +27,7 @@ function App() {
                 collection.doc(u.uid).get().then(s => {
                     const user: User = {
                         uid: u.uid,
+                        displayName: u.displayName,
                         ...s.data()
                     };
                     setUser(user);
@@ -38,11 +38,6 @@ function App() {
             }
         });
     }, []);
-
-    function openInstance(room: Room) {
-        setRoom(room);
-        history.push('/instance/' + room.uid);
-    }
 
     const navBar = (
         <Navbar
@@ -97,15 +92,15 @@ function App() {
                             <Redirect to='/list' />
                         </Route>
                         <Route path='/list'>
-                            <RoomList openInstance={openInstance} />
+                            <RoomList />
                         </Route>
                         <Route path='/new-post'>
                             {user &&
-                            <NewPost user={user} />
+                                <NewPost user={user} />
                             }
                         </Route>
                         <Route path='/instance/:id'>
-                            <Instance room={room} user={user} />
+                            <Instance user={user} />
                         </Route>
                         <Route path='/settings'>
                             {user &&

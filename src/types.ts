@@ -14,6 +14,7 @@ export interface Room {
 
 export interface User {
     uid: string;
+    displayName: string | null,
     games?: string[];
     blockedPlayers?: string[];
     psn?: string;
