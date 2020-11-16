@@ -18,6 +18,7 @@ export default function Instance(props: IProps) {
     const [room, setRoom] = useState<Room | undefined>();
     const [players, setPlayers] = useState<User[]>([]);
     const history = useHistory();
+    const roomsCollection = firebase.firestore().collection('rooms');
 
     useEffect(() => {
         const collection = firebase.firestore().collection('rooms');
@@ -54,39 +55,57 @@ export default function Instance(props: IProps) {
             for (let index = 0; index < room.totalSlots; index++) {
                 let ign;
                 if (players[index]) {
-                    ign = players[index][room.platform as keyof User] !== '' ? room.platform + ' - ' + players[index][room.platform as keyof User] : 'generic - ' + players[index].displayName;
+                    ign = players[index][room.platform as keyof User] !== '' ?
+                        room.platform + ' - ' + players[index][room.platform as keyof User]
+                        :
+                        'generic - ' + players[index].displayName;
                 }
                 slots.push(
                     <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{ign}</td>
+                        {(user && room && room.filledSlots[0] === user.uid) &&
+                            players[index] && players[index].uid !== user.uid ? (
+                                <td><Button className="btn-danger" onClick={() => handleKick(players[index].uid)}>Kick</Button></td>
+                            ) : (
+                                <td></td>
+                            )}
                     </tr>);
             }
             return slots;
         }
     }
 
+    function handleKick(playerToKick: string) {
+        if (room && user !== null) {
+            room.filledSlots = room.filledSlots.filter(s => s !== playerToKick);
+            setRoom({
+                ...room,
+                filledSlots: room.filledSlots
+            });
+            roomsCollection.doc(room.uid).set(room, { merge: true });
+        }
+    }
+
     function handleJoin() {
         if (room && room.filledSlots.length <= room.totalSlots && user !== null) {
-            const collection = firebase.firestore().collection('rooms');
             room.filledSlots.push(user.uid);
             setRoom({
                 ...room,
                 filledSlots: room.filledSlots,
             });
-            collection.doc(room.uid).set(room, { merge: true });
+            roomsCollection.doc(room.uid).set(room, { merge: true });
         }
     }
 
     function handleLeave() {
         if (room && user !== null) {
-            const collection = firebase.firestore().collection('rooms');
             room.filledSlots = room.filledSlots.filter(s => s !== user.uid);
             setRoom({
                 ...room,
                 filledSlots: room.filledSlots
             });
-            collection.doc(room.uid).set(room, { merge: true });
+            roomsCollection.doc(room.uid).set(room, { merge: true });
         }
     }
 
@@ -143,6 +162,7 @@ export default function Instance(props: IProps) {
                             <tr>
                                 <th>#</th>
                                 <th className='col-1'>Player</th>
+                                {user && room.filledSlots[0] === user.uid && <th></th>}
                             </tr>
                         </thead>
                         <tbody>
