@@ -59,7 +59,7 @@ export default function NewPost(props: IProps) {
     const collection = firebase.firestore().collection('rooms');
 
     collection.doc(id).set({ ...room, uid: id })
-      .then(r => history.push('/list'))
+      .then(_r => history.push('/instance/' + id))
       .catch(error => console.log(error));
 
   }
