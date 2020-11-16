@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/storage";
 import { Room } from "./types";
 import { Col, Container, Row, ListGroup, ListGroupItem, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
 
 export default function RoomList() {
   const history = useHistory();
@@ -110,32 +107,34 @@ export default function RoomList() {
   }
 
   const list = rooms.map((room: Room) => (
-    <ListGroupItem key={room.uid} action>
-      <Container>
-        <Row>
-          <Col xs={2} className="d-flex justify-content-start align-items-center">
-            <div>
-              <img src="unknown.png" alt="" /><br />
-              {room.platform}
-            </div>
-          </Col>
-          <Col>
-            <Row>
-              <Col xs={8} className="d-flex justify-content-start text-left font-weight-bold">{room.game}</Col>
-              <Col className="d-flex justify-content-end">{timeExpires(room.timeLimit)}</Col>
-            </Row>
-            <Row>
-              <Col xs={8} className="d-flex justify-content-start text-left font-weight-lighter font-italic">{room.title}</Col>
-              <Col className="d-flex justify-content-end">{room.username}</Col>
-            </Row>
-            <Row>
-              <Col xs={8} className="d-flex justify-content-start text-left">Slots: {room.filledSlots.length} of {room.totalSlots}</Col>
-              <Col className="d-flex justify-content-end">{timeNumber(room.time)} {timeText(room.time)} ago.</Col>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
-    </ListGroupItem>
+    <Link key={room.rid} to={'/instance/' + room.rid}>
+      <ListGroupItem action >
+        <Container>
+          <Row>
+            <Col xs={2} className="d-flex justify-content-start align-items-center">
+              <div>
+                <img src="unknown.png" alt="" /><br />
+                {room.platform}
+              </div>
+            </Col>
+            <Col>
+              <Row>
+                <Col xs={8} className="d-flex justify-content-start text-left font-weight-bold">{room.game}</Col>
+                <Col className="d-flex justify-content-end">{timeExpires(room.timeLimit)}</Col>
+              </Row>
+              <Row>
+                <Col xs={8} className="d-flex justify-content-start text-left font-weight-lighter font-italic">{room.title}</Col>
+                <Col className="d-flex justify-content-end">{room.username}</Col>
+              </Row>
+              <Row>
+                <Col xs={8} className="d-flex justify-content-start text-left">Slots: {room.filledSlots.length} of {room.totalSlots}</Col>
+                <Col className="d-flex justify-content-end">{timeNumber(room.time)} {timeText(room.time)} ago.</Col>
+              </Row>
+            </Col>
+          </Row>
+        </Container>
+      </ListGroupItem>
+    </Link>
   ));
 
   return (

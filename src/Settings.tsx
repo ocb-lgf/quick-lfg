@@ -11,6 +11,7 @@ interface IProps {
 export default function Settings(props: IProps) {
     const [saveStatus, setSaveStatus] = useState<string>();
     const [user, setUser] = useState<User>({
+        displayName: '',
         games: [''],
         psn: '',
         xbox: '',

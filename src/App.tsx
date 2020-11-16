@@ -11,32 +11,28 @@ import Settings from './Settings';
 import { User } from './types';
 import Login from './Login';
 import useWindowSize from './useWindowSize';
+import Instance from './Instance';
 
 const history = createBrowserHistory();
 
 function App() {
-    const [user, setUser] = useState<User>();
-    const [docId, setDocId] = useState<string>();
     const { width } = useWindowSize();
+    const [user, setUser] = useState<User>();
+    const [userDocId, setUserDocId] = useState<string>();
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
             if (u) {
                 const collection = firebase.firestore().collection('users');
-                collection.where('uid', '==', u.uid).get()
-                    .then(qSnapshot => {
-                        qSnapshot.forEach(doc => {
-                            const id = doc.id;
-                            setDocId(id);
-                            const user: User = {
-                                uid: u.uid,
-                                ...doc.data()
-                            };
-                            setUser(user);
-                        });
-                    });
-            }
-            else {
+                collection.doc(u.uid).get().then(s => {
+                    const user: User = {
+                        uid: u.uid,
+                        displayName: u.displayName,
+                        ...s.data()
+                    };
+                    setUser(user);
+                });
+            } else {
                 setUser(undefined);
                 history.push('/');
             }
@@ -60,7 +56,7 @@ function App() {
                 <Nav.Item>
                     <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
                         Room
-                        </Nav.Link>
+                    </Nav.Link>
                 </Nav.Item>
                 {user ?
                     <>
@@ -100,16 +96,19 @@ function App() {
                         </Route>
                         <Route path='/new-post'>
                             {user &&
-                            <NewPost user={user} />
+                                <NewPost user={user} />
                             }
+                        </Route>
+                        <Route path='/instance/:id'>
+                            <Instance user={user} />
                         </Route>
                         <Route path='/settings'>
                             {user &&
-                                <Settings user={user} docId={docId} />
+                                <Settings user={user} docId={userDocId} />
                             }
                         </Route>
                         <Route path='/login'>
-                            <Login setUser={setUser} setDocId={setDocId} />
+                            <Login setDocId={setUserDocId} />
                         </Route>
                     </Switch>
                 </main>

@@ -4,13 +4,16 @@ $border: #3e4c58;
 $middle: #779ba5;
 $light: #eeeeee;
 $spice: #d45b2b;
+$warning: #e0a631;
 
 $body-bg: $gunmetal;
 $body-color: $light;
 
 $theme-colors: (
   primary: $spice,
+  secondary: $middle,
   dark: $darkest,
+  warning: $warning,
 );
 
 // Import Bootstrap and its default variables
@@ -35,6 +38,7 @@ $theme-colors: (
   position: absolute;
   right: 1rem;
   bottom: 1rem;
+  z-index: 100;
 }
 
 /* Some trickery */

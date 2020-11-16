@@ -5,7 +5,6 @@ import { User } from './types';
 import { useHistory } from 'react-router-dom';
 
 interface IProps {
-    setUser: (user: User) => void;
     setDocId: (id: string) => void;
 }
 
@@ -21,9 +20,10 @@ export default function Login(props: IProps) {
             signInSuccessWithAuthResult: (authResult: any) => {
                 const collection = firebase.firestore().collection('users');
                 if (authResult.additionalUserInfo.isNewUser) {
-                    const newUser: User = { uid: authResult.user.uid };
-                    collection.add(newUser);
+                    const newUser: User = { uid: authResult.user.uid, displayName: authResult.user.displayName };
+                    collection.doc(authResult.user.uid).set(newUser);
                 }
+                props.setDocId(authResult.user.uid);
                 history.push('/settings');
                 return false;
             }
