@@ -23,7 +23,6 @@ export default function Login(props: IProps) {
                     const newUser: User = { uid: authResult.user.uid, displayName: authResult.user.displayName };
                     collection.doc(authResult.user.uid).set(newUser);
                 }
-                console.log(authResult.user.uid);
                 props.setDocId(authResult.user.uid);
                 history.push('/settings');
                 return false;
