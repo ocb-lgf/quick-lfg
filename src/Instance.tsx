@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import firebase from 'firebase/app';
-import { Col, Container, Row, ListGroup, ListGroupItem, Button, Jumbotron } from 'react-bootstrap';
+import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron } from 'react-bootstrap';
 import { Room, User } from "./types";
 
 interface ParamTypes {
@@ -10,43 +10,30 @@ interface ParamTypes {
 
 interface IProps {
     user?: User;
-    room?: Room;
 }
 
 export default function Instance(props: IProps) {
     let { id } = useParams<ParamTypes>();
-    const [room, setRoom] = useState<Room | undefined>(props.room);
-    const [players, setPlayers] = useState<User[]>();
+    const user = firebase.auth().currentUser;
+    const [room, setRoom] = useState<Room | undefined>();
+    const [players, setPlayers] = useState<User[]>([]);
     const history = useHistory();
 
     useEffect(() => {
-        if (!room) {
-            const collection = firebase.firestore().collection('rooms');
-            collection.doc(id).get().then(d => {
-                setRoom(d.data() as Room);
-            });
-        }
-        else if (room) {
+        const collection = firebase.firestore().collection('rooms');
+        return collection.doc(id).onSnapshot(d => {
+            setRoom(d.data() as Room);
+        });
+    }, [id]);
+
+    useEffect(() => {
+        if (room) {
             const collection = firebase.firestore().collection('users');
-            room.filledSlots.forEach(p => {
-                collection.doc(p).get().then(d => {
-                    if (players) {
-                        setPlayers([
-                            ...players,
-                            d.data() as User
-                        ]);
-                    } else {
-                        setPlayers([
-                            d.data() as User
-                        ]);
-                    }
-                });
-            });
+            Promise.all(room.filledSlots.map(p => {
+                return collection.doc(p).get().then(d => d.data()) as Promise<User>;
+            })).then(p => setPlayers(p));
         }
-    }, [id, room]);
-
-    console.log(players);
-
+    }, [room]);
 
     function timeToGo() {
         if (room && room.timeLimit) {
@@ -61,44 +48,116 @@ export default function Instance(props: IProps) {
         return null;
     }
 
+    function populateSlots() {
+        if (room) {
+            let slots = [];
+            for (let index = 0; index < room.totalSlots; index++) {
+                let ign;
+                if (players[index]) {
+                    ign = players[index][room.platform as keyof User] !== '' ? room.platform + ' - ' + players[index][room.platform as keyof User] : 'generic - ' + players[index].displayName;
+                }
+                slots.push(
+                    <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{ign}</td>
+                    </tr>);
+            }
+            return slots;
+        }
+    }
+
+    function handleJoin() {
+        if (room && room.filledSlots.length <= room.totalSlots && user !== null) {
+            const collection = firebase.firestore().collection('rooms');
+            room.filledSlots.push(user.uid);
+            setRoom({
+                ...room,
+                filledSlots: room.filledSlots,
+            });
+            collection.doc(room.uid).set(room, { merge: true });
+        }
+    }
+
+    function handleLeave() {
+        if (room && user !== null) {
+            const collection = firebase.firestore().collection('rooms');
+            room.filledSlots = room.filledSlots.filter(s => s !== user.uid);
+            setRoom({
+                ...room,
+                filledSlots: room.filledSlots
+            });
+            collection.doc(room.uid).set(room, { merge: true });
+        }
+    }
+
+    function joinLeaveButtons() {
+        let button = <div></div>;
+
+        if (room && user !== null) {
+            if (!room.filledSlots.includes(user.uid)) {
+                button = <Button onClick={handleJoin}>Join!</Button>;
+            }
+            else if (room.filledSlots[0] !== user.uid) {
+                button = <Button className="btn-danger" onClick={handleLeave}>Leave</Button>;
+            }
+        }
+
+        return button;
+    }
+
     return (
         room ?
             <>
                 <Jumbotron fluid className="bg-secondary px-3 py-3">
-                    <Jumbotron className="d-flex justify-content-center bg-primary py-3">
+                    <Jumbotron className="d-flex justify-content-center bg-warning py-3">
                         <h2>{room.title}</h2>
                     </Jumbotron>
-                    <Row className="px-4">
-                        <Col>
-                            <Row>
-                                <h3>{room.game}</h3>
-                            </Row>
-                            <Row>
-                                <h5>({room.platform})</h5>
-                            </Row>
-                            <Row>
-                                <h5>Posted by {room.username}</h5>
-                            </Row>
-                        </Col>
-                        <Col>
-                            <Row className="d-flex justify-content-end">
-                                <h5 className="mt-1">Posted: {room.time.toDate().toLocaleTimeString()}</h5>
-                            </Row>
-                            <Row className="d-flex justify-content-end">
-                                <h3>{timeToGo()}</h3>
-                            </Row>
-                        </Col>
-                    </Row>
+                    <ListGroup>
+                        <ListGroupItem className="px-4">
+                            <Col>
+                                <ListGroupItem>
+                                    <h3>{room.game}</h3>
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    <h5>({room.platform})</h5>
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    <h5>Posted by {room.username}</h5>
+                                </ListGroupItem>
+                            </Col>
+                            <Col>
+                                <ListGroupItem className="d-flex justify-content-end">
+                                    <h5 className="mt-1">Posted: {room.time.toDate().toLocaleTimeString()}</h5>
+                                </ListGroupItem>
+                                <ListGroupItem className="d-flex justify-content-end">
+                                    <h3>{timeToGo()}</h3>
+                                </ListGroupItem>
+                            </Col>
+                        </ListGroupItem>
+                    </ListGroup>
                 </Jumbotron>
                 <Container>
-                    {props.user ?
-                        <Row>
-                            <Col xs={2}>test</Col>
-                            <Col xs={10}>test</Col>
-                        </Row>
-                        :
-                        <Button onClick={() => history.push('/login')}>Create a user to join!</Button>
-                    }
+                    <h4>Staging area:</h4>
+                    <Table striped variant='dark'>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th className='col-1'>Player</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {props.user ?
+                                populateSlots()
+                                :
+                                <tr>
+                                    <td>
+                                        <Button onClick={() => history.push('/login')}>Log in to join!</Button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </Table>
+                    {joinLeaveButtons()}
                 </Container>
             </>
             :

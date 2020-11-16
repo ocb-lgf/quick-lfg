@@ -1,38 +1,37 @@
-import React, { ChangeEvent, useState} from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
-import { Room, User } from "./types"
+import { Room, User } from "./types";
 import { Alert, ButtonGroup, Form } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 import { useHistory } from 'react-router';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 interface IProps {
   user: User;
 }
 
 export default function NewPost(props: IProps) {
-  const date = new Date();
+  const date = firebase.firestore.Timestamp.fromDate(new Date());
   const [timeToAdd, setTimeToAdd] = useState<number>(0);
-  const [user, setUser] = useState<User>({
-
+  const user = {
     ...props.user
-  });
+  };
   const history = useHistory();
   const id: string = uuid();
 
   const [room, setRoom] = useState<Room>({
     uid: '',
-    username: '',
+    username: firebase.auth().currentUser?.displayName || '',
     title: '',
     game: '',
     platform: 'none',
     time: date,
     timeLimit: date,
     totalSlots: 0,
-    filledSlots: [props.user.uid]
+    filledSlots: [user.uid]
   });
 
   function handleChange(event: ChangeEvent<any>) {
@@ -40,11 +39,12 @@ export default function NewPost(props: IProps) {
     const value = target.value;
     const name = target.name;
     if (name === 'timeLimit') {
-      setTimeToAdd(value)
+      setTimeToAdd(value);
       setRoom({
         ...room,
-        timeLimit: new Date(date.getTime() + value * 60000)
-      })
+        // timeLimit: new Date(date.getTime() + value * 60000)
+        timeLimit: firebase.firestore.Timestamp.fromDate(new Date(date.seconds * 1000 + value * 60000))
+      });
     } else {
       setRoom({
         ...room,
