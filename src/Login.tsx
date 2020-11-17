@@ -20,7 +20,12 @@ export default function Login(props: IProps) {
             signInSuccessWithAuthResult: (authResult: any) => {
                 const collection = firebase.firestore().collection('users');
                 if (authResult.additionalUserInfo.isNewUser) {
-                    const newUser: User = { uid: authResult.user.uid, displayName: authResult.user.displayName };
+                    const newUser: User = {
+                        uid: authResult.user.uid,
+                        displayName: authResult.user.displayName,
+                        games: [],
+                        blockedPlayers: [],
+                    };
                     collection.doc(authResult.user.uid).set(newUser);
                 }
                 props.setDocId(authResult.user.uid);
