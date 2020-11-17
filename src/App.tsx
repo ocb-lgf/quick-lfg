@@ -49,7 +49,7 @@ function App() {
             bg="dark"
             variant="dark"
             className="justify-content-center">
-            <Navbar.Brand className="text-white" >LFG</Navbar.Brand>
+            <Navbar.Brand className="text-white">LFG</Navbar.Brand>
             <Nav variant="pills">
                 <Nav.Item>
                     <Nav.Link as={NavLink} to='/list' activeClassName="active">
@@ -58,7 +58,7 @@ function App() {
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
-                        Room
+                        Create New
                     </Nav.Link>
                 </Nav.Item>
                 {user ?
