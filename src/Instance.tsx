@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { Redirect, useHistory, useParams } from 'react-router';
 import firebase from 'firebase/app';
-import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup } from 'react-bootstrap';
+import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner } from 'react-bootstrap';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
 
@@ -17,7 +17,7 @@ export default function Instance(props: IProps) {
     let { id } = useParams<ParamTypes>();
     const user = firebase.auth().currentUser;
     const [room, setRoom] = useState<Room>();
-    const owner = useOwner({ rid: id });
+    const owner = useOwner(id);
     const [players, setPlayers] = useState<User[]>([]);
     const history = useHistory();
     const roomsCollection = firebase.firestore().collection('rooms');
@@ -70,8 +70,8 @@ export default function Instance(props: IProps) {
                             players[index] && players[index].uid !== user.uid ? (
                                 <td>
                                     <InputGroup className="justify-content-between">
-                                        <Button className="btn-warning" onClick={() => handleBan(players[index].uid)}>Ban</Button>
-                                        <Button className="btn-danger" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                        <Button className="btn-danger" onClick={() => handleBlock(players[index].uid)}>Block</Button>
+                                        <Button className="btn-warning" onClick={() => handleKick(players[index].uid)}>Kick</Button>
                                     </InputGroup>
                                 </td>
                             ) : (
@@ -94,10 +94,15 @@ export default function Instance(props: IProps) {
         }
     }
 
-    function handleBan(playerToBan: string) {
-        if (room && user !== null) {
+    function handleBlock(playerToBlock: string) {
+        if (room && owner) {
             const usersCollection = firebase.firestore().collection('users');
 
+            if (!owner.blockedPlayers.includes(playerToBlock)) {
+                owner.blockedPlayers.push(playerToBlock);
+            }
+            handleKick(playerToBlock);
+            usersCollection.doc(owner.uid).set(owner, { merge: true });
         }
     }
 
@@ -139,8 +144,8 @@ export default function Instance(props: IProps) {
     }
 
     return (
-        room ?
-            <>
+        room && user && owner && !owner.blockedPlayers.includes(user.uid) ?
+            (<>
                 <Jumbotron fluid className="bg-secondary px-3 py-3">
                     <Jumbotron className="d-flex justify-content-center bg-warning py-3">
                         <h2>{room.title}</h2>
@@ -176,7 +181,7 @@ export default function Instance(props: IProps) {
                             <tr>
                                 <th style={{ width: '1rem' }}>#</th>
                                 <th style={{ width: 'auto' }}>Player</th>
-                                {user && owner && owner.uid === user.uid && <th style={{ width: '9rem' }}></th>}
+                                {owner.uid === user.uid && <th style={{ width: '9rem' }}></th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -193,8 +198,13 @@ export default function Instance(props: IProps) {
                     </Table>
                     {joinLeaveButtons()}
                 </Container>
-            </>
+            </>)
             :
-            <div></div>
+            (<Container className="d-flex flex-column flex-center m-5">
+                {!room && !user ?
+                    <Spinner className="align-self-center justify-self-center" animation="border" />
+                    :
+                    owner && user && owner.blockedPlayers.includes(user.uid) && <Redirect to="/list" />}
+            </Container>)
     );
 }
