@@ -2,17 +2,12 @@ import { useEffect, useState } from 'react';
 import firebase from 'firebase/app';
 import { User } from "./types";
 
-interface IProps {
-    rid: string;
-}
-
-export default function useOwner({ rid }: IProps) {
+export default function useOwner(rid: string) {
     const [uid, setUid] = useState<string | undefined>();
     const [owner, setOwner] = useState<User>();
 
     useEffect(() => {
         const roomsCollection = firebase.firestore().collection('rooms');
-        const usersCollection = firebase.firestore().collection('users');
 
         roomsCollection.doc(rid).get().then(r => {
             const d = r.data();
@@ -20,12 +15,17 @@ export default function useOwner({ rid }: IProps) {
                 setUid(d.filledSlots[0]);
             }
         });
+    }, [rid]);
+
+    useEffect(() => {
         if (uid) {
-            usersCollection.doc(uid).get().then(u => {
+            const usersCollection = firebase.firestore().collection('users');
+            return usersCollection.doc(uid).onSnapshot(u => {
                 setOwner(u.data() as User);
             });
         }
-    });
+    }, [uid]);
 
     return owner;
+
 }
