@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import firebase from 'firebase/app';
-import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron } from 'react-bootstrap';
+import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup } from 'react-bootstrap';
 import { Room, User } from "./types";
+import useOwner from "./useOwner";
 
 interface ParamTypes {
     id: string;
@@ -15,7 +16,8 @@ interface IProps {
 export default function Instance(props: IProps) {
     let { id } = useParams<ParamTypes>();
     const user = firebase.auth().currentUser;
-    const [room, setRoom] = useState<Room | undefined>();
+    const [room, setRoom] = useState<Room>();
+    const owner = useOwner({ rid: id });
     const [players, setPlayers] = useState<User[]>([]);
     const history = useHistory();
     const roomsCollection = firebase.firestore().collection('rooms');
@@ -64,9 +66,14 @@ export default function Instance(props: IProps) {
                     <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{ign}</td>
-                        {(user && room && room.filledSlots[0] === user.uid) &&
+                        {(user && owner && owner.uid === user.uid) &&
                             players[index] && players[index].uid !== user.uid ? (
-                                <td><Button className="btn-danger" onClick={() => handleKick(players[index].uid)}>Kick</Button></td>
+                                <td>
+                                    <InputGroup className="justify-content-between">
+                                        <Button className="btn-warning" onClick={() => handleBan(players[index].uid)}>Ban</Button>
+                                        <Button className="btn-danger" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                    </InputGroup>
+                                </td>
                             ) : (
                                 <td></td>
                             )}
@@ -77,13 +84,20 @@ export default function Instance(props: IProps) {
     }
 
     function handleKick(playerToKick: string) {
-        if (room && user !== null) {
+        if (room) {
             room.filledSlots = room.filledSlots.filter(s => s !== playerToKick);
             setRoom({
                 ...room,
                 filledSlots: room.filledSlots
             });
             roomsCollection.doc(room.rid).set(room, { merge: true });
+        }
+    }
+
+    function handleBan(playerToBan: string) {
+        if (room && user !== null) {
+            const usersCollection = firebase.firestore().collection('users');
+
         }
     }
 
@@ -112,11 +126,11 @@ export default function Instance(props: IProps) {
     function joinLeaveButtons() {
         let button = <div></div>;
 
-        if (room && user !== null) {
+        if (room && owner && user !== null) {
             if (!room.filledSlots.includes(user.uid)) {
                 button = <Button onClick={handleJoin}>Join!</Button>;
             }
-            else if (room.filledSlots[0] !== user.uid) {
+            else if (owner.uid !== user.uid) {
                 button = <Button className="btn-danger" onClick={handleLeave}>Leave</Button>;
             }
         }
@@ -160,9 +174,9 @@ export default function Instance(props: IProps) {
                     <Table striped variant='dark'>
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th className='col-1'>Player</th>
-                                {user && room.filledSlots[0] === user.uid && <th></th>}
+                                <th style={{ width: '1rem' }}>#</th>
+                                <th style={{ width: 'auto' }}>Player</th>
+                                {user && owner && owner.uid === user.uid && <th style={{ width: '9rem' }}></th>}
                             </tr>
                         </thead>
                         <tbody>
