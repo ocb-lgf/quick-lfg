@@ -4,6 +4,7 @@ import firebase from 'firebase/app';
 import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner } from 'react-bootstrap';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
+import Chat from "./Chat"
 
 interface ParamTypes {
     id: string;
@@ -206,6 +207,7 @@ export default function Instance(props: IProps) {
                     </Table>
                     {joinLeaveButtons()}
                 </Container>
+                <Chat rid={id}/>
             </>);
         }
         else if (!user && room) {
