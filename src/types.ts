@@ -27,7 +27,7 @@ export interface User {
     origin?: string;
 }
 
-export interface Chats {
+export interface ChatMessage {
     mid: string;
     message: string;
     username: string;
