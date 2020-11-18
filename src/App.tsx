@@ -28,13 +28,15 @@ function App() {
                     const user: User = {
                         uid: u.uid,
                         displayName: u.displayName,
+                        games: [],
+                        blockedPlayers: [],
                         ...s.data()
                     };
+
                     setUser(user);
                 });
             } else {
                 setUser(undefined);
-                history.push('/');
             }
         });
     }, []);
@@ -46,20 +48,20 @@ function App() {
             bg="dark"
             variant="dark"
             className="justify-content-center">
-            <Navbar.Brand className="text-white" >LFG</Navbar.Brand>
+            <Navbar.Brand className="text-white">LFG</Navbar.Brand>
             <Nav variant="pills">
                 <Nav.Item>
                     <Nav.Link as={NavLink} to='/list' activeClassName="active">
                         List
                         </Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
-                        Room
-                    </Nav.Link>
-                </Nav.Item>
                 {user ?
                     <>
+                        <Nav.Item>
+                            <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
+                                Post New
+                        </Nav.Link>
+                        </Nav.Item>
                         <Nav.Item>
                             <Nav.Link as={NavLink} to='/settings' activeClassName="active">
                                 Settings
