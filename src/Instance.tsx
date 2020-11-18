@@ -107,7 +107,7 @@ export default function Instance(props: IProps) {
     }
 
     function handleJoin() {
-        if (room && room.filledSlots.length <= room.totalSlots && user !== null) {
+        if (room && room.filledSlots.length <= room.totalSlots && user) {
             room.filledSlots.push(user.uid);
             setRoom({
                 ...room,
@@ -118,7 +118,7 @@ export default function Instance(props: IProps) {
     }
 
     function handleLeave() {
-        if (room && user !== null) {
+        if (room && user) {
             room.filledSlots = room.filledSlots.filter(s => s !== user.uid);
             setRoom({
                 ...room,
@@ -131,7 +131,7 @@ export default function Instance(props: IProps) {
     function joinLeaveButtons() {
         let button = <div></div>;
 
-        if (room && owner && user !== null) {
+        if (room && owner && user) {
             if (!room.filledSlots.includes(user.uid)) {
                 button = <Button onClick={handleJoin}>Join!</Button>;
             }
@@ -143,9 +143,17 @@ export default function Instance(props: IProps) {
         return button;
     }
 
-    return (
-        room && user && owner && !owner.blockedPlayers.includes(user.uid) ?
-            (<>
+    function displayRoom() {
+        let result = (
+            <Container className="d-flex flex-column flex-center m-5">
+                <Spinner className="align-self-center justify-self-center" animation="border" />
+            </Container>);
+
+        if (user && owner && owner.blockedPlayers.includes(user.uid)) {
+            result = <Redirect to="/list" />;
+        }
+        else if (room && user && owner) {
+            result = (<>
                 <Jumbotron fluid className="bg-secondary px-3 py-3">
                     <Jumbotron className="d-flex justify-content-center bg-warning py-3">
                         <h2>{room.title}</h2>
@@ -198,13 +206,55 @@ export default function Instance(props: IProps) {
                     </Table>
                     {joinLeaveButtons()}
                 </Container>
-            </>)
-            :
-            (<Container className="d-flex flex-column flex-center m-5">
-                {!room && !user ?
-                    <Spinner className="align-self-center justify-self-center" animation="border" />
-                    :
-                    owner && user && owner.blockedPlayers.includes(user.uid) && <Redirect to="/list" />}
-            </Container>)
-    );
+            </>);
+        }
+        else if (!user && room) {
+            result = (<>
+                <Jumbotron fluid className="bg-secondary px-3 py-3">
+                    <Jumbotron className="d-flex justify-content-center bg-warning py-3">
+                        <h2>{room.title}</h2>
+                    </Jumbotron>
+                    <ListGroup>
+                        <ListGroupItem className="px-4">
+                            <Col>
+                                <ListGroupItem>
+                                    <h3>{room.game}</h3>
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    <h5>({room.platform})</h5>
+                                </ListGroupItem>
+                                <ListGroupItem>
+                                    <h5>Posted by {room.username}</h5>
+                                </ListGroupItem>
+                            </Col>
+                            <Col>
+                                <ListGroupItem className="d-flex justify-content-end">
+                                    <h5 className="mt-1">Posted: {room.time.toDate().toLocaleTimeString()}</h5>
+                                </ListGroupItem>
+                                <ListGroupItem className="d-flex justify-content-end">
+                                    <h3>{timeToGo()}</h3>
+                                </ListGroupItem>
+                            </Col>
+                        </ListGroupItem>
+                    </ListGroup>
+                </Jumbotron>
+                <Container>
+                    <h4>Staging area:</h4>
+                    <Table striped variant='dark'>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <Button onClick={() => history.push('/login')}>Log in to join!</Button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                </Container>
+            </>);
+        }
+
+        return result;
+    }
+
+    return displayRoom();
 }

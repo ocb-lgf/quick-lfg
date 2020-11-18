@@ -37,7 +37,6 @@ function App() {
                 });
             } else {
                 setUser(undefined);
-                history.push('/');
             }
         });
     }, []);
@@ -56,13 +55,13 @@ function App() {
                         List
                         </Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
-                        Create New
-                    </Nav.Link>
-                </Nav.Item>
                 {user ?
                     <>
+                        <Nav.Item>
+                            <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
+                                Post New
+                        </Nav.Link>
+                        </Nav.Item>
                         <Nav.Item>
                             <Nav.Link as={NavLink} to='/settings' activeClassName="active">
                                 Settings
