@@ -45,21 +45,25 @@ $theme-colors: (
   height: 20rem;
   overflow-y: auto;
   background-color: $darkest;
-  border-radius:.5rem .5rem 0 0;
+  border-radius: 0.5rem 0.5rem 0 0;
 
   &::-webkit-scrollbar {
     width: 12px;
   }
- 
+
   &::-webkit-scrollbar-track {
-    border-radius: 0 .5rem 0 0;
-    box-shadow: inset 0 0 6px rgba(200,200,200,1);
+    border-radius: 0 0.5rem 0 0;
+    box-shadow: inset 0 0 6px rgba(200, 200, 200, 1);
   }
 
   &::-webkit-scrollbar-thumb {
-    border-radius: .1rem;
-    background-color:$light;
+    border-radius: 0.1rem;
+    background-color: $light;
   }
+}
+
+.chat-bottom {
+  margin-top: 1.6rem;
 }
 
 /* Some trickery */
