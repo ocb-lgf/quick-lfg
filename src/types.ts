@@ -27,4 +27,11 @@ export interface User {
     origin?: string;
 }
 
+export interface Chats {
+    mid: string;
+    message: string;
+    username: string;
+    time: firebase.firestore.Timestamp;
+}
+
 export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'steam' | 'battlenet' | 'epic' | 'origin' | 'none';
