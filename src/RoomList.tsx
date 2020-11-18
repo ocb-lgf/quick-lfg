@@ -9,22 +9,22 @@ import { FaSearch, FaTimes } from "react-icons/fa";
 
 export default function RoomList() {
   const history = useHistory();
+  
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [search, setSearch] = useState<any>({
-    searchTerm: "",
-    platforms: [],
-  });
+  const [search, setSearch] = useState<string>("");
   const [filterRooms, setFilterRooms] = useState<Room[]>(rooms);
+  const [searchPlatforms, setSearchPlatforms] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+
 
   useEffect(() => {
-    console.log(search)
     const collection = firebase.firestore().collection('rooms');
     return collection.onSnapshot((snapshot) => {
       setRooms(snapshot.docs.map(d => ({
         ...d.data()
       })) as Room[]);
     });
-  }, []);
+  }, [search, searchPlatforms]);
 
 
 
@@ -152,64 +152,29 @@ export default function RoomList() {
     </Link>
   ));
 
-  const [open, setOpen] = useState(false);
-  const [psnCheck, setPsnCheck] = useState<boolean>(false);
-  const [xboxCheck, setXboxCheck] = useState<boolean>(false);
-  const [pcCheck, setPcCheck] = useState<boolean>(false);
-  const [switchCheck, setSwitchCheck] = useState<boolean>(false);
 
   useEffect(() => {
 
-    const searchedList = [...rooms].filter(e => e.game.toLowerCase().includes((search.searchTerm).toLowerCase() as unknown as string))
+    const searchedList = [...rooms].filter(e => e.game.toLowerCase().includes((search).toLowerCase() as unknown as string) || e.title.toLowerCase().includes((search).toLowerCase() as unknown as string));
     let filteredList;
-    filteredList = [...searchedList].filter(e => search.platforms.includes(e.platform))
+    filteredList = [...searchedList].filter(e => searchPlatforms.includes(e.platform))
 
-    if (search.platforms[0] !== undefined) {
+    if (searchPlatforms[0] !== undefined) {
       setFilterRooms(filteredList);
     } else setFilterRooms(searchedList)
 
-  }, [search])
+  }, [search, rooms, searchPlatforms])
 
-  useEffect(() => {
-    let roomObj = { ...search };
-    if (psnCheck) {
-      if (!(roomObj.platforms.includes("psn"))) {
-        roomObj.platforms.push("psn")
-      }
-    } else roomObj.platforms = roomObj.platforms.filter((e: string) => e !== "psn")
-    setSearch(roomObj);
-  }, [psnCheck]);
+  function checkPlatform(plat: string) {
+    let pushArr = [...searchPlatforms]
 
-  useEffect(() => {
-    let roomObj = { ...search };
-    if (xboxCheck) {
-      if (!(roomObj.platforms.includes("xbox"))) {
-        roomObj.platforms.push("xbox")
-      }
-    } else roomObj.platforms = roomObj.platforms.filter((e: string) => e !== "xbox")
-    setSearch(roomObj);
-  }, [xboxCheck]);
-
-  useEffect(() => {
-    let roomObj = { ...search };
-    if (switchCheck) {
-      if (!(roomObj.platforms.includes("switch"))) {
-        roomObj.platforms.push("switch")
-      }
-    } else roomObj.platforms = roomObj.platforms.filter((e: string) => e !== "switch")
-    setSearch(roomObj);
-  }, [switchCheck]);
-
-  useEffect(() => {
-    let roomObj = { ...search };
-    if (pcCheck) {
-      if (!(roomObj.platforms.includes("pc"))) {
-        roomObj.platforms.push("pc")
-      }
-    } else roomObj.platforms = roomObj.platforms.filter((e: string) => e !== "pc")
-    setSearch(roomObj);
-  }, [pcCheck]);
-
+    if (searchPlatforms.includes(plat)) {
+      setSearchPlatforms(searchPlatforms.filter((e: string) => e !== plat))
+    } else {
+      pushArr.push(plat);
+      setSearchPlatforms(pushArr);
+    };
+  };
 
   return (
     <>
@@ -220,18 +185,19 @@ export default function RoomList() {
             <Col>
               <Form>
                 <InputGroup className="mb-3" style={{ position: "relative" }}>
-                  <FormControl onChange={e => setSearch({searchTerm: e.target.value,platforms: {...search}.platforms})} value={search.searchTerm} name="searchText" type="text" placeholder="Search..." aria-label="Search"
-                    aria-describedby="search-term" /><FaTimes style={{ color: "#3e4c58", position: "absolute", right: "56px", top: "10px", fontSize: "20px", zIndex: 100}}
-                      type="button" onClick={() => setSearch({searchTerm: "",platforms: {...search}.platforms})} />
+                  <FormControl onChange={e => setSearch(e.target.value)} value={search} name="searchText" type="text" placeholder="Search..." aria-label="Search"
+                    aria-describedby="search-term" />
+                    {search !== "" && <FaTimes style={{ color: "#3e4c58", position: "absolute", right: "56px", top: "10px", fontSize: "20px", zIndex: 100}}
+                      type="button" onClick={() => setSearch("")} />}
                   <InputGroup.Append>
                     <Button variant="secondary" onClick={() => setOpen(!open)}><FaSearch style={{marginBottom: 3}} /></Button>
                   </InputGroup.Append>
                 </InputGroup>
                 <Row className="d-flex justify-content-around" style={{ marginBottom: 15 }}>
-                  <Form.Check type="checkbox" label="PSN" name="psn" onChange={() => { setPsnCheck(!psnCheck); console.log(psnCheck) }} />
-                  <Form.Check type="checkbox" label="Xbox" name="xbox" onChange={() => { setXboxCheck(!xboxCheck) }} />
-                  <Form.Check type="checkbox" label="Switch" name="switch" onChange={() => { setSwitchCheck(!switchCheck) }} />
-                  <Form.Check type="checkbox" label="PC" name="pc" onChange={() => { setPcCheck(!pcCheck) }} />
+                  <Form.Check type="checkbox" label="PSN" name="psn" onChange={() => { checkPlatform("psn") }} />
+                  <Form.Check type="checkbox" label="Xbox" name="xbox" onChange={() => { checkPlatform("xbox") }} />
+                  <Form.Check type="checkbox" label="Switch" name="switch" onChange={() => { checkPlatform("switch") }} />
+                  <Form.Check type="checkbox" label="PC" name="pc" onChange={() => { checkPlatform("pc") }} />
                 </Row>
               </Form>
             </Col>
@@ -239,8 +205,8 @@ export default function RoomList() {
         </Container>
       </Collapse>
       <ListGroup>
-        {(search.searchTerm === "" && !search.platforms[0]) && list(rooms)}
-        {!(search.searchTerm === "" && !search.platforms[0]) && list(filterRooms)}
+        {(search === "" && !searchPlatforms[0]) && list(rooms)}
+        {!(search === "" && !searchPlatforms[0]) && list(filterRooms)}
       </ListGroup>
       <Button className="fab" onClick={() => history.push('/new-post')}>Post New</Button>
     </>);
