@@ -21,7 +21,7 @@ export default function RoomList() {
   const [allowList, setAllowList] = useState<Room[]>([]);
 
   useEffect(() => {
-    const collection = firebase.firestore().collection('rooms').orderBy('time', 'desc');;
+    const collection = firebase.firestore().collection('rooms').orderBy('timeLimit', 'asc');
     return collection.onSnapshot((snapshot) => {
       setRooms(snapshot.docs.map(d => ({
         ...d.data()
@@ -62,6 +62,11 @@ export default function RoomList() {
           });
           if ((owner && owner.blockedPlayers.includes(user.uid))
             || (user && owner && user.blockedPlayers.includes(owner.uid))) {
+            return false;
+          }
+          return true;
+        }).filter(r => {
+          if (r.timeLimit && r.timeLimit?.toDate() < new Date()) {
             return false;
           }
           return true;
