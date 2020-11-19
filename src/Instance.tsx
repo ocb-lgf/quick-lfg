@@ -132,8 +132,8 @@ export default function Instance(props: IProps) {
     function joinLeaveButtons() {
         let button = <div></div>;
 
-        if (room && owner && user && room.filledSlots.length < room.totalSlots) {
-            if (!room.filledSlots.includes(user.uid)) {
+        if (room && owner && user) {
+            if (!room.filledSlots.includes(user.uid) && room.filledSlots.length < room.totalSlots) {
                 button = <Button onClick={handleJoin}>Join!</Button>;
             }
             else if (owner.uid !== user.uid) {
