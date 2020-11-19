@@ -27,6 +27,7 @@ export default function Chat({ rid }: IProps) {
       setMessages(snapshot.docs.map(d => ({
         ...d.data()
       })) as ChatMessage[]);
+      scrollToBottom();
     });
   }, [rid]);
 
@@ -55,7 +56,6 @@ export default function Chat({ rid }: IProps) {
         username: '',
         time: date
       });
-      scrollToBottom();
     }
   }
 

@@ -4,7 +4,7 @@ import firebase from 'firebase/app';
 import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner } from 'react-bootstrap';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
-import Chat from "./Chat"
+import Chat from "./Chat";
 
 interface ParamTypes {
     id: string;
@@ -194,20 +194,12 @@ export default function Instance(props: IProps) {
                             </tr>
                         </thead>
                         <tbody>
-                            {props.user ?
-                                populateSlots()
-                                :
-                                <tr>
-                                    <td>
-                                        <Button onClick={() => history.push('/login')}>Log in to join!</Button>
-                                    </td>
-                                </tr>
-                            }
+                            {user && populateSlots()}
                         </tbody>
                     </Table>
                     {joinLeaveButtons()}
                 </Container>
-                <Chat rid={id}/>
+                {room.filledSlots.includes(user.uid) && <Chat rid={id} />}
             </>);
         }
         else if (!user && room) {
