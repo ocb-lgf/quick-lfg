@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { NavLink, Redirect, Route, Router, Switch } from 'react-router-dom';
+import { NavLink, Redirect, Route, Router, Switch, Link } from 'react-router-dom';
 import { Nav, Navbar } from 'react-bootstrap';
 import { createBrowserHistory } from 'history';
 import firebase from 'firebase/app';
-
 import NewPost from './NewPost';
 import RoomList from './RoomList';
 import Settings from './Settings';
@@ -19,6 +18,7 @@ function App() {
     const { width } = useWindowSize();
     const [user, setUser] = useState<User>();
     const [userDocId, setUserDocId] = useState<string>();
+    document.title = "Fast LFG";
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
@@ -48,7 +48,9 @@ function App() {
             bg="dark"
             variant="dark"
             className="justify-content-center">
-            <Navbar.Brand className="text-white">LFG</Navbar.Brand>
+            <Link to="/list">
+                <Navbar.Brand className="text-white">Fast LFG</Navbar.Brand>
+            </Link>
             <Nav variant="pills">
                 <Nav.Item>
                     <Nav.Link as={NavLink} to='/list' activeClassName="active">

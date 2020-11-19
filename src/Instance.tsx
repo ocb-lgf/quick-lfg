@@ -108,7 +108,7 @@ export default function Instance(props: IProps) {
     }
 
     function handleJoin() {
-        if (room && room.filledSlots.length <= room.totalSlots && user) {
+        if (room && room.filledSlots.length < room.totalSlots && user) {
             room.filledSlots.push(user.uid);
             setRoom({
                 ...room,
@@ -132,7 +132,7 @@ export default function Instance(props: IProps) {
     function joinLeaveButtons() {
         let button = <div></div>;
 
-        if (room && owner && user) {
+        if (room && owner && user && room.filledSlots.length < room.totalSlots) {
             if (!room.filledSlots.includes(user.uid)) {
                 button = <Button onClick={handleJoin}>Join!</Button>;
             }
