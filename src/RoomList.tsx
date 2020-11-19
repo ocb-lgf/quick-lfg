@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import firebase from "firebase/app";
 import { Room, User } from "./types";
-import { Col, Container, Row, ListGroup, ListGroupItem, Button, Collapse, InputGroup, FormControl, Form } from 'react-bootstrap';
+import { Col, Container, Row, ListGroup, ListGroupItem, Button, InputGroup, FormControl, Form } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FaSearch, FaTimes } from "react-icons/fa";
@@ -226,32 +226,29 @@ export default function RoomList() {
 
   return (
     <>
-      <Button onClick={() => setOpen(!open)} aria-controls="collapse-filter" aria-expanded={open}>Filter</Button>
-      <Collapse in={open}>
-        <Container id="collapse-filter">
-          <Row>
-            <Col>
-              <Form>
-                <InputGroup className="mb-3" style={{ position: "relative" }}>
-                  <FormControl onChange={e => setSearch(e.target.value)} value={search} name="searchText" type="text" placeholder="Search..." aria-label="Search"
-                    aria-describedby="search-term" />
-                  {search !== "" && <FaTimes style={{ color: "#3e4c58", position: "absolute", right: "56px", top: "10px", fontSize: "20px", zIndex: 100 }}
-                    type="button" onClick={() => setSearch("")} />}
-                  <InputGroup.Append>
-                    <Button variant="secondary" onClick={() => setOpen(!open)}><FaSearch style={{ marginBottom: 3 }} /></Button>
-                  </InputGroup.Append>
-                </InputGroup>
-                <Row className="d-flex justify-content-around" style={{ marginBottom: 15 }}>
-                  <Form.Check type="checkbox" label="PSN" name="psn" onChange={() => { checkPlatform("psn"); }} />
-                  <Form.Check type="checkbox" label="Xbox" name="xbox" onChange={() => { checkPlatform("xbox"); }} />
-                  <Form.Check type="checkbox" label="Switch" name="switch" onChange={() => { checkPlatform("switch"); }} />
-                  <Form.Check type="checkbox" label="PC" name="pc" onChange={() => { checkPlatform("pc"); }} />
-                </Row>
-              </Form>
-            </Col>
-          </Row>
-        </Container>
-      </Collapse>
+      <Container className="border-primary mt-3">
+        <Row>
+          <Col>
+            <Form>
+              <InputGroup className="mb-3" style={{ position: "relative" }}>
+                <FormControl onChange={e => setSearch(e.target.value)} value={search} name="searchText" type="text" placeholder="Search..." aria-label="Search"
+                  aria-describedby="search-term" />
+                {search !== "" && <FaTimes style={{ color: "#3e4c58", position: "absolute", right: "56px", top: "10px", fontSize: "20px", zIndex: 100 }}
+                  type="button" onClick={() => setSearch("")} />}
+                <InputGroup.Append>
+                  <Button variant="secondary" onClick={() => setOpen(!open)}><FaSearch style={{ marginBottom: 3 }} /></Button>
+                </InputGroup.Append>
+              </InputGroup>
+              <Row className="d-flex justify-content-around" style={{ marginBottom: 15 }}>
+                <Form.Check type="checkbox" inline label="PSN" id={`inline-checkbox-1`} name="psn" onChange={() => { checkPlatform("psn"); }} />
+                <Form.Check type="checkbox" inline label="Xbox" id={`inline-checkbox-2`} name="xbox" onChange={() => { checkPlatform("xbox"); }} />
+                <Form.Check type="checkbox" inline label="Switch" id={`inline-checkbox-3`} name="switch" onChange={() => { checkPlatform("switch"); }} />
+                <Form.Check type="checkbox" inline label="PC" id={`inline-checkbox-4`} name="pc" onChange={() => { checkPlatform("pc"); }} />
+              </Row>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
       <ListGroup>
         {(search === "" && !searchPlatforms[0]) && list(allowList)}
         {!(search === "" && !searchPlatforms[0]) && filterRooms && list(filterRooms)}
