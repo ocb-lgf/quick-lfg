@@ -139,6 +139,9 @@ export default function Instance() {
                 bannedPlayers: room.bannedPlayers
             });
             roomsCollection.doc(id).set(room, { merge: true });
+            if (room.bannedPlayers.length === 0) {
+                setShowTab('joined');
+            }
         }
     }
 
