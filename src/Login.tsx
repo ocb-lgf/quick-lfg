@@ -4,11 +4,8 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { User } from './types';
 import { useHistory } from 'react-router-dom';
 
-interface IProps {
-    setDocId: (id: string) => void;
-}
 
-export default function Login(props: IProps) {
+export default function Login() {
     const history = useHistory();
 
     const uiConfig = {
@@ -27,7 +24,6 @@ export default function Login(props: IProps) {
                     };
                     collection.doc(authResult.user.uid).set(newUser);
                 }
-                props.setDocId(authResult.user.uid);
                 history.push('/settings');
                 return false;
             }

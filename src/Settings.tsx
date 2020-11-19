@@ -1,39 +1,38 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { User } from './types';
 import firebase from 'firebase/app';
-import { Container, Col, Form, Button, Alert } from 'react-bootstrap';
+import { Container, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
+import BlockedUsers from './BlockedUsers';
 
 interface IProps {
     user: User;
-    docId?: string;
 }
 
 export default function Settings(props: IProps) {
     const [saveStatus, setSaveStatus] = useState<string>();
-    const [user, setUser] = useState<User>({
-        displayName: '',
-        psn: '',
-        xbox: '',
-        switch: '',
-        pc: '',
-        ...props.user
-    });
+    const [user, setUser] = useState<User>();
+
+    useEffect(() => {
+        setUser(props.user);
+    }, [props.user]);
 
     function handleChange(event: ChangeEvent<any>) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
 
-        if (name === 'games') {
-            setUser({
-                ...user,
-                [name]: value.split(',')
-            });
-        } else {
-            setUser({
-                ...user,
-                [name]: value
-            });
+        if (user) {
+            if (name === 'games') {
+                setUser({
+                    ...user,
+                    [name]: value.split(',')
+                });
+            } else {
+                setUser({
+                    ...user,
+                    [name]: value
+                });
+            }
         }
     }
 
@@ -41,16 +40,14 @@ export default function Settings(props: IProps) {
         event.preventDefault();
         setSaveStatus('');
 
-        if (props.docId) {
-            const collection = firebase.firestore().collection('users');
-            collection.doc(props.docId).set({ ...user }, { merge: true })
-                .then(_r => setSaveStatus('success'))
-                .catch(_e => setSaveStatus('error'));
-        }
+        const collection = firebase.firestore().collection('users');
+        collection.doc(props.user.uid).set({ ...user }, { merge: true })
+            .then(_r => setSaveStatus('success'))
+            .catch(_e => setSaveStatus('error'));
     }
 
     return (
-        <Container>
+        user ? <Container>
             <Col lg={6} className="py-2">
                 <Form onSubmit={handleSubmit}>
                     {saveStatus === 'success' && <Alert variant='success'>Successfully saved!</Alert>}
@@ -66,8 +63,11 @@ export default function Settings(props: IProps) {
                     <Form.Group className="pt-3 d-flex flex-row justify-content-end">
                         <Button variant="primary" type="submit">Save</Button>
                     </Form.Group>
+                    {user.blockedPlayers.length !== 0 && <BlockedUsers uid={props.user.uid} />}
                 </Form>
             </Col>
         </Container>
+            :
+            <Spinner className="align-self-center justify-self-center" animation="border" />
     );
 }

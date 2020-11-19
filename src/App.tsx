@@ -17,22 +17,15 @@ const history = createBrowserHistory();
 function App() {
     const { width } = useWindowSize();
     const [user, setUser] = useState<User>();
-    const [userDocId, setUserDocId] = useState<string>();
     document.title = "Fast LFG";
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
             if (u) {
                 const collection = firebase.firestore().collection('users');
-                collection.doc(u.uid).get().then(s => {
-                    const user: User = {
-                        uid: u.uid,
-                        displayName: u.displayName,
-                        blockedPlayers: [],
-                        ...s.data()
-                    };
-
-                    setUser(user);
+                collection.doc(u.uid).onSnapshot(s => {
+                    const theUser: User = s.data() as User;
+                    setUser(theUser);
                 });
             } else {
                 setUser(undefined);
@@ -107,11 +100,11 @@ function App() {
                         </Route>
                         <Route path='/settings'>
                             {user &&
-                                <Settings user={user} docId={userDocId} />
+                                <Settings user={user} />
                             }
                         </Route>
                         <Route path='/login'>
-                            <Login setDocId={setUserDocId} />
+                            <Login />
                         </Route>
                     </Switch>
                 </main>
