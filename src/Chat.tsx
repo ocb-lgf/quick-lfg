@@ -70,7 +70,7 @@ export default function Chat({ rid }: IProps) {
     <Container className="mt-3">
       <Col className="chatbox">
         {messages && messages.length && messages.map(m =>
-          <Row className="d-flex justify-content-start ">
+          <Row key={m.mid} className="d-flex justify-content-start">
             <Col><span className="text-muted">{m.time.toDate().toLocaleTimeString()}</span> - <span className="text-primary">{m.username}:</span> {m.message}</Col>
           </Row>
         )}
