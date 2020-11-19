@@ -62,6 +62,14 @@ $theme-colors: (
   }
 }
 
+.nav-tabs .nav-link {
+  color: $middle;
+}
+
+.nav-tabs .nav-link.active {
+  color: $spice !important;
+}
+
 /* Some trickery */
 label[for="ui-sign-in-name-input"] {
   visibility: hidden !important;

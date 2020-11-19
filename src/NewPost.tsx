@@ -33,6 +33,7 @@ export default function NewPost(props: IProps) {
     totalSlots: 0,
     filledSlots: [user.uid],
     joinedPlayers: user.displayName ? [user.displayName] : [],
+    bannedPlayers: [...user.blockedPlayers]
   });
 
   function handleChange(event: ChangeEvent<any>) {

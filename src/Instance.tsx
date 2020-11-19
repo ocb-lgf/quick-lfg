@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, useHistory, useParams } from 'react-router';
 import firebase from 'firebase/app';
-import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner } from 'react-bootstrap';
+import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav } from 'react-bootstrap';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
 import Chat from "./Chat";
@@ -10,18 +10,16 @@ interface ParamTypes {
     id: string;
 }
 
-interface IProps {
-    user?: User;
-}
-
-export default function Instance(props: IProps) {
+export default function Instance() {
     let { id } = useParams<ParamTypes>();
     const user = firebase.auth().currentUser;
-    const [room, setRoom] = useState<Room>();
-    const owner = useOwner(id);
-    const [players, setPlayers] = useState<User[]>([]);
     const history = useHistory();
     const roomsCollection = firebase.firestore().collection('rooms');
+    const owner = useOwner(id);
+    const [room, setRoom] = useState<Room>();
+    const [players, setPlayers] = useState<User[]>([]);
+    const [showTab, setShowTab] = useState('joined');
+    const [bannedUsers, setBannedUsers] = useState<User[]>();
 
     useEffect(() => {
         const collection = firebase.firestore().collection('rooms');
@@ -36,6 +34,15 @@ export default function Instance(props: IProps) {
             Promise.all(room.filledSlots.map(p => {
                 return collection.doc(p).get().then(d => d.data()) as Promise<User>;
             })).then(p => setPlayers(p));
+        }
+    }, [room]);
+
+    useEffect(() => {
+        if (room) {
+            const collection = firebase.firestore().collection('users');
+            Promise.all(room.bannedPlayers.map(p => {
+                return collection.doc(p).get().then(d => d.data()) as Promise<User>;
+            })).then(p => setBannedUsers(p));
         }
     }, [room]);
 
@@ -72,7 +79,8 @@ export default function Instance(props: IProps) {
                                 <td>
                                     <InputGroup className="justify-content-between">
                                         <Button className="btn-danger" onClick={() => handleBlock(players[index].uid)}>Block</Button>
-                                        <Button className="btn-warning" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                        <Button className="btn-warning" onClick={() => handleBan(players[index].uid)}>Ban</Button>
+                                        <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
                                     </InputGroup>
                                 </td>
                             ) : (
@@ -101,9 +109,36 @@ export default function Instance(props: IProps) {
 
             if (!owner.blockedPlayers.includes(playerToBlock)) {
                 owner.blockedPlayers.push(playerToBlock);
+                room.bannedPlayers.push(playerToBlock);
             }
             handleKick(playerToBlock);
             usersCollection.doc(owner.uid).set(owner, { merge: true });
+            roomsCollection.doc(id).set(room, { merge: true });
+        }
+    }
+
+    function handleBan(playerToBan: string) {
+        if (room) {
+            const roomsCollection = firebase.firestore().collection('rooms');
+
+            if (!room.bannedPlayers.includes(playerToBan)) {
+                room.bannedPlayers.push(playerToBan);
+            }
+            handleKick(playerToBan);
+            roomsCollection.doc(id).set(room, { merge: true });
+        }
+    }
+
+    function handleUnban(playerToUnban: string) {
+        if (room) {
+            const roomsCollection = firebase.firestore().collection('rooms');
+
+            room.bannedPlayers = room.bannedPlayers.filter(p => p !== playerToUnban);
+            setRoom({
+                ...room,
+                bannedPlayers: room.bannedPlayers
+            });
+            roomsCollection.doc(id).set(room, { merge: true });
         }
     }
 
@@ -123,9 +158,11 @@ export default function Instance(props: IProps) {
     function handleLeave() {
         if (room && user) {
             room.filledSlots = room.filledSlots.filter(s => s !== user.uid);
+            room.joinedPlayers = room.joinedPlayers.filter(s => s !== user.displayName);
             setRoom({
                 ...room,
-                filledSlots: room.filledSlots
+                filledSlots: room.filledSlots,
+                joinedPlayers: room.joinedPlayers,
             });
             roomsCollection.doc(room.rid).set(room, { merge: true });
         }
@@ -146,13 +183,48 @@ export default function Instance(props: IProps) {
         return button;
     }
 
+    const joinedPlayers = (
+        <Table striped variant='dark'>
+            <thead>
+                <tr>
+                    <th colSpan={3}>Joined Players</th>
+                </tr>
+                <tr>
+                    <th style={{ width: '1rem' }}>#</th>
+                    <th style={{ width: 'auto' }}>Player</th>
+                    {owner && user && owner.uid === user.uid && <th style={{ width: '13rem' }}></th>}
+                </tr>
+            </thead>
+            <tbody>
+                {user && populateSlots()}
+            </tbody>
+        </Table >);
+
+    const bannedPlayers = (
+        <Table striped variant='dark'>
+            <thead>
+                <tr>
+                    <th colSpan={2}>Banned players</th>
+                </tr>
+            </thead>
+            <tbody>
+                {room && bannedUsers && bannedUsers.map(p => (
+                    <tr key={p.uid}>
+                        <td style={{ width: 'auto' }}>{p[room.platform as keyof User] !== '' ? p[room.platform as keyof User] : p.displayName}</td>
+                        <td style={{ width: '1rem' }}><Button className="btn-success" onClick={() => handleUnban(p.uid)}>Unban</Button></td>
+                    </tr>
+                ))}
+            </tbody>
+        </Table >);
+
     function displayRoom() {
         let result = (
             <Container className="d-flex flex-column flex-center m-5">
                 <Spinner className="align-self-center justify-self-center" animation="border" />
             </Container>);
 
-        if (user && owner && owner.blockedPlayers.includes(user.uid)) {
+        if ((user && owner && owner.blockedPlayers.includes(user.uid))
+            || (user && room && room.bannedPlayers.includes(user.uid))) {
             result = <Redirect to="/list" />;
         }
         else if (room && user && owner) {
@@ -186,19 +258,19 @@ export default function Instance(props: IProps) {
                     </ListGroup>
                 </Jumbotron>
                 <Container>
-                    <h4>Staging area:</h4>
-                    <Table striped variant='dark'>
-                        <thead>
-                            <tr>
-                                <th style={{ width: '1rem' }}>#</th>
-                                <th style={{ width: 'auto' }}>Player</th>
-                                {owner.uid === user.uid && <th style={{ width: '9rem' }}></th>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {user && populateSlots()}
-                        </tbody>
-                    </Table>
+                    <h4 className="pb-3">Staging area:</h4>
+                    {owner.uid === user.uid && room.bannedPlayers.length !== 0 && (
+                        <Nav variant="tabs" defaultActiveKey="joined">
+                            <Nav.Item>
+                                <Nav.Link eventKey="joined" onClick={() => setShowTab('joined')}>Joined Players</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="banned" onClick={() => setShowTab('banned')}>Banned Players</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                    )}
+                    {showTab === 'joined' && joinedPlayers}
+                    {showTab === 'banned' && bannedPlayers}
                     {joinLeaveButtons()}
                 </Container>
                 {room.filledSlots.includes(user.uid) && <Chat rid={id} />}

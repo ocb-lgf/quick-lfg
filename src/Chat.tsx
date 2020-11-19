@@ -4,10 +4,10 @@ import { ChatMessage } from "./types";
 import { Button, Form, Row, Col, Container, InputGroup } from 'react-bootstrap';
 import { v4 as uuid } from 'uuid';
 
-// Create a reference to the chat collection
 interface IProps {
   rid: string;
 }
+
 export default function Chat({ rid }: IProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const collection = firebase.firestore().collection("rooms").doc(rid).collection("chat");
@@ -69,7 +69,7 @@ export default function Chat({ rid }: IProps) {
   return (
     <Container className="mt-3 mb-5">
       <Col className="chatbox">
-        {messages && messages.length && messages.map(m =>
+        {messages && messages.length !== 0 && messages.map(m =>
           <Row key={m.mid} className="d-flex justify-content-start">
             <Col><span className="text-muted">{m.time.toDate().toLocaleTimeString()}</span> - <span className="text-primary">{m.username}:</span> {m.message}</Col>
           </Row>

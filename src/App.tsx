@@ -96,7 +96,7 @@ function App() {
                             }
                         </Route>
                         <Route path='/instance/:id'>
-                            <Instance user={user} />
+                            <Instance />
                         </Route>
                         <Route path='/settings'>
                             {user &&

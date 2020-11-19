@@ -11,6 +11,7 @@ export interface Room {
     totalSlots: number;
     filledSlots: string[];
     joinedPlayers: string[];
+    bannedPlayers: string[];
 }
 
 export interface User {

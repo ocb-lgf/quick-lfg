@@ -58,14 +58,7 @@ export default function RoomList() {
     if (user && owners && rooms) {
       const filteredList =
         rooms.filter(r => {
-          const owner = owners.find(o => {
-            if (r.filledSlots[0] === o.uid) {
-              return true;
-            }
-            return false;
-          });
-          if ((owner && owner.blockedPlayers.includes(user.uid))
-            || (user && owner && user.blockedPlayers.includes(owner.uid))) {
+          if (r.bannedPlayers && r.bannedPlayers.includes(user.uid)) {
             return false;
           }
           return true;
