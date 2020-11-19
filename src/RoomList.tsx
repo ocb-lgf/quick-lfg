@@ -21,7 +21,7 @@ export default function RoomList() {
   const [allowList, setAllowList] = useState<Room[]>([]);
 
   useEffect(() => {
-    const collection = firebase.firestore().collection('rooms');
+    const collection = firebase.firestore().collection('rooms').orderBy('time', 'desc');;
     return collection.onSnapshot((snapshot) => {
       setRooms(snapshot.docs.map(d => ({
         ...d.data()
