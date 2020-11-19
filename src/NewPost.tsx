@@ -31,7 +31,8 @@ export default function NewPost(props: IProps) {
     time: date,
     timeLimit: date,
     totalSlots: 0,
-    filledSlots: [user.uid]
+    filledSlots: [user.uid],
+    joinedPlayers: user.displayName ? [user.displayName] : [],
   });
 
   function handleChange(event: ChangeEvent<any>) {

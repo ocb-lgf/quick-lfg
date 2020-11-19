@@ -108,11 +108,13 @@ export default function Instance(props: IProps) {
     }
 
     function handleJoin() {
-        if (room && room.filledSlots.length < room.totalSlots && user) {
+        if (room && room.filledSlots.length < room.totalSlots && user && user.displayName) {
             room.filledSlots.push(user.uid);
+            room.joinedPlayers.push(user.displayName);
             setRoom({
                 ...room,
                 filledSlots: room.filledSlots,
+                joinedPlayers: room.joinedPlayers,
             });
             roomsCollection.doc(room.rid).set(room, { merge: true });
         }

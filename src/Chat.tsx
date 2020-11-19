@@ -67,7 +67,7 @@ export default function Chat({ rid }: IProps) {
   }
 
   return (
-    <Container className="mt-3">
+    <Container className="mt-3 mb-5">
       <Col className="chatbox">
         {messages && messages.length && messages.map(m =>
           <Row key={m.mid} className="d-flex justify-content-start">

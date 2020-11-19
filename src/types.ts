@@ -10,6 +10,7 @@ export interface Room {
     timeLimit?: firebase.firestore.Timestamp;
     totalSlots: number;
     filledSlots: string[];
+    joinedPlayers: string[];
 }
 
 export interface User {
