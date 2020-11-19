@@ -5,8 +5,12 @@ import { Col, Container, Row, ListGroup, ListGroupItem, Button, InputGroup, Form
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FaSearch, FaTimes } from "react-icons/fa";
-import slot_filled from "./assets/slot-filled.svg"
-import slot_empty from "./assets/slot-empty.svg"
+import slot_filled from "./assets/slot-filled.svg";
+import slot_empty from "./assets/slot-empty.svg";
+import psIcon from './assets/playstation.svg';
+import pcIcon from './assets/pc.svg';
+import xboxIcon from './assets/xbox.svg';
+import switchIcon from './assets/switch.svg';
 
 export default function RoomList() {
   const history = useHistory();
@@ -20,6 +24,7 @@ export default function RoomList() {
   const [owners, setOwners] = useState<User[]>();
   const [user, setUser] = useState<User>();
   const [allowList, setAllowList] = useState<Room[]>([]);
+  const iconStyle = { height: 32, };
 
   useEffect(() => {
     const collection = firebase.firestore().collection('rooms').orderBy('timeLimit', 'asc');
@@ -82,7 +87,7 @@ export default function RoomList() {
     if (order === 0) {
       ms = (Date.parse(currentTime as unknown as string) - Date.parse(givenTime as unknown as string));
     } else {
-      ms = (Date.parse(givenTime as unknown as string) - Date.parse(currentTime as unknown as string))
+      ms = (Date.parse(givenTime as unknown as string) - Date.parse(currentTime as unknown as string));
     }
 
     if ((ms / seconds) < 2) {
@@ -112,7 +117,7 @@ export default function RoomList() {
     if (order === 0) {
       ms = (Date.parse(currentTime as unknown as string) - Date.parse(givenTime as unknown as string));
     } else {
-      ms = (Date.parse(givenTime as unknown as string) - Date.parse(currentTime as unknown as string))
+      ms = (Date.parse(givenTime as unknown as string) - Date.parse(currentTime as unknown as string));
     }
 
     if (((ms / seconds) < 2) || ((ms / seconds) < 60)) {
@@ -142,13 +147,13 @@ export default function RoomList() {
   }
 
   function iconList(total: number, filled: string[]) {
-    let icons = [<Image className="mt-1" src={slot_filled} title={filled[0]} style={{ height: 25 }} />];
+    let icons = [<Image key={-1} className="mt-1" src={slot_filled} title={filled[0]} style={iconStyle} />];
 
     for (let i = 1; i < filled.length; i++) {
-      icons.push(<Image className="mt-1" src={slot_filled} title={filled[i]} style={{ height: 25}} />)
+      icons.push(<Image key={i} className="mt-1 ml-1" src={slot_filled} title={filled[i]} style={iconStyle} />);
     }
     for (let i = 0; i < (total - filled.length); i++) {
-      icons.push(<Image className="mt-1 ml-1" src={slot_empty} style={{ height: 25}} />)
+      icons.push(<Image key={i} className="mt-1 ml-1" src={slot_empty} style={iconStyle} />);
     }
     return icons;
   }
@@ -160,9 +165,10 @@ export default function RoomList() {
           <Row>
             <Col xs={2} className="d-flex justify-content-start align-items-center">
               <div>
-                {room.platform.toLowerCase() === "psn" && <img style={{ width: "40px", height: "40px" }} alt="psimg" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Font_Awesome_5_brands_playstation.svg" />}
-                {room.platform.toLowerCase() === "xbox" && <img style={{ width: "35px", height: "35px" }} alt="xboximg" src="https://upload.wikimedia.org/wikipedia/commons/7/77/Font_Awesome_5_brands_xbox.svg" />}
-                {room.platform.toLowerCase() === "switch" && <img style={{ width: "45px", height: "45px" }} alt="s-img" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Nintendo_Switch_Logo_%28without_text%29.svg" />}
+                {room.platform.toLowerCase() === "psn" && <img style={{ width: "40px", height: "40px" }} alt="PS" src={psIcon} />}
+                {room.platform.toLowerCase() === "xbox" && <img style={{ width: "35px", height: "35px" }} alt="Xbox" src={xboxIcon} />}
+                {room.platform.toLowerCase() === "switch" && <img style={{ width: "45px", height: "45px" }} alt="Switch" src={switchIcon} />}
+                {room.platform.toLowerCase() === "pc" && <img style={{ width: "35px", height: "35px" }} alt="PC" src={pcIcon} />}
                 <br />
                 {room.platform === "psn" && "PSN"}
                 {room.platform === "xbox" && "XBox"}
@@ -184,9 +190,9 @@ export default function RoomList() {
                   {room.totalSlots < 7 && iconList(room.totalSlots, room.joinedPlayers)}
                   {room.totalSlots >= 7 && <Form.Text className="mt-1 d-flex flex-row">
                     <span className="slot-count">{room.filledSlots.length}</span>
-                    <Image className="mt-2 ml-1" src={slot_filled} style={{ height: 25}}/>
-                  <Image className="ml-2 mr-1 mt-2" src={slot_empty} style={{ height: 25}} />
-                  <span className="slot-count">{room.totalSlots - room.filledSlots.length}</span>
+                    <Image className="ml-1" src={slot_filled} style={iconStyle} />
+                    <Image className="ml-2 mr-1" src={slot_empty} style={iconStyle} />
+                    <span className="slot-count">{room.totalSlots - room.filledSlots.length}</span>
                   </Form.Text>}
                 </Col>
                 <Col className="d-flex justify-content-end">{timeNumber(room.time, 0)}{timeText(room.time, 0)} ago</Col>

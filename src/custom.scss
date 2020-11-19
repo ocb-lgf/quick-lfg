@@ -1,7 +1,7 @@
 $darkest: #1e2329;
 $gunmetal: #2d343b;
 $border: #3e4c58;
-$middle: #779ba5;
+$middle: #789ca5;
 $light: #eeeeee;
 $spice: #d45b2b;
 $warning: #e0a631;
@@ -43,7 +43,12 @@ $theme-colors: (
 
 .slot-count {
   font-size: 1.3rem;
-  align-self: flex-end;
+  align-self: center;
+}
+
+.display-name-setting {
+  margin-left: 1rem;
+  margin-right: 5rem;
 }
 
 .chatbox {
@@ -81,7 +86,7 @@ label[for="ui-sign-in-name-input"] {
 }
 
 label[for="ui-sign-in-name-input"]::before {
-  content: "Display Name";
+  content: "Username";
   visibility: visible;
 }
 
@@ -90,6 +95,13 @@ label[for="ui-sign-in-name-input"]::before {
     margin-bottom: 5rem;
   }
   .fab {
-    bottom: 4rem;
+    position: fixed;
+    bottom: 5rem;
+    right: 2.4rem;
+  }
+
+  .display-name-setting {
+    margin-left: 1rem;
+    margin-right: 0;
   }
 }

@@ -47,9 +47,10 @@ export default function Settings(props: IProps) {
     }
 
     return (
-        user ? <Container>
+        user ? <Container className="d-flex flex-row justify-content-center">
             <Col lg={6} className="py-2">
-                <Form onSubmit={handleSubmit}>
+                <Form className="d-flex flex-column" onSubmit={handleSubmit}>
+                    <h2 className="mb-4 align-self-center">Settings</h2>
                     {saveStatus === 'success' && <Alert variant='success'>Successfully saved!</Alert>}
                     {saveStatus === 'error' && <Alert variant='error'>Something went wrong.</Alert>}
                     <Form.Label>PSN username:</Form.Label>
