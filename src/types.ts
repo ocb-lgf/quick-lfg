@@ -15,16 +15,11 @@ export interface Room {
 export interface User {
     uid: string;
     displayName: string | null,
-    games: string[];
     blockedPlayers: string[];
     psn?: string;
     xbox?: string;
     switch?: string;
-    steam?: string;
     pc?: string;
-    battlenet?: string;
-    epic?: string;
-    origin?: string;
 }
 
 export interface ChatMessage {
@@ -34,4 +29,4 @@ export interface ChatMessage {
     time: firebase.firestore.Timestamp;
 }
 
-export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'steam' | 'battlenet' | 'epic' | 'origin' | 'none';
+export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'none';

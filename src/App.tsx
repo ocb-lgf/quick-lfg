@@ -28,7 +28,6 @@ function App() {
                     const user: User = {
                         uid: u.uid,
                         displayName: u.displayName,
-                        games: [],
                         blockedPlayers: [],
                         ...s.data()
                     };

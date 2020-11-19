@@ -123,10 +123,6 @@ export default function NewPost(props: IProps) {
           <option>xbox</option>
           <option>switch</option>
           <option>pc</option>
-          <option>steam</option>
-          <option>battlenet</option>
-          <option>epic</option>
-          <option>origin</option>
         </Form.Control>
         <Form.Text className="text-muted">
           Choose your platform

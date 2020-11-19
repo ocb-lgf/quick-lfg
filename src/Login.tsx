@@ -23,7 +23,6 @@ export default function Login(props: IProps) {
                     const newUser: User = {
                         uid: authResult.user.uid,
                         displayName: authResult.user.displayName,
-                        games: [],
                         blockedPlayers: [],
                     };
                     collection.doc(authResult.user.uid).set(newUser);
