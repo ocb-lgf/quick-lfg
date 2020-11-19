@@ -4,10 +4,11 @@ import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
 import { Room, User } from "./types";
-import { Alert, ButtonGroup, Form } from 'react-bootstrap';
+import { Alert, ButtonGroup, Form, Image, Row } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 import { useHistory } from 'react-router';
 import { v4 as uuid } from 'uuid';
+import slot_empty from "./assets/slot-empty.svg"
 
 interface IProps {
   user: User;
@@ -30,11 +31,13 @@ export default function NewPost(props: IProps) {
     platform: 'none',
     time: date,
     timeLimit: date,
-    totalSlots: 0,
+    totalSlots: 1,
     filledSlots: [user.uid],
     joinedPlayers: user.displayName ? [user.displayName] : [],
     bannedPlayers: [...user.blockedPlayers]
   });
+
+  const [icons, setIcons] = useState<any>(<Image src={slot_empty} style={{height: 40, marginLeft: 20}}/>);
 
   function handleChange(event: ChangeEvent<any>) {
     const target = event.target;
@@ -47,6 +50,16 @@ export default function NewPost(props: IProps) {
         // timeLimit: new Date(date.getTime() + value * 60000)
         timeLimit: firebase.firestore.Timestamp.fromDate(new Date(date.seconds * 1000 + value * 60000))
       });
+    } else if (name === 'totalSlots'){
+      let lmao = [<Image src={slot_empty} style={{height: 40, marginLeft: 15}}/>];
+      for (let i = 0; i < value-1; i++) {
+      lmao.push(<Image src={slot_empty} style={{height: 40, marginLeft: 8}}/>)
+    }
+    setIcons(lmao);
+    setRoom({
+      ...room,
+      [name]: value
+    });
     } else {
       setRoom({
         ...room,
@@ -63,7 +76,6 @@ export default function NewPost(props: IProps) {
     collection.doc(id).set({ ...room, rid: id })
       .then(_r => history.push('/instance/' + id))
       .catch(error => console.log(error));
-
   }
 
   function AlertDismissible() {
@@ -81,6 +93,8 @@ export default function NewPost(props: IProps) {
     }
     return <Button onClick={() => setShow(true)}>Notifier</Button>;
   }
+
+  
 
   return (
 
@@ -151,10 +165,14 @@ export default function NewPost(props: IProps) {
 
       <Form.Group controlId="formBasicSlots">
         <Form.Label>Size of party</Form.Label>
-        <Form.Control type="number" min="0" max="40" value={room.totalSlots}
+        <Row style={{marginLeft: 10}}>
+        <Form.Control style={{width: 60,}} type="number" min="1" max="40" value={room.totalSlots}
           onChange={handleChange}
           name="totalSlots">
         </Form.Control>
+        {room.totalSlots > 6 && <><Image src={slot_empty} style={{ height: 40, marginLeft: 15 }} /><Form.Text>{room.totalSlots}</Form.Text></>}
+        {room.totalSlots <= 6 && icons}
+        </Row>
         <Form.Text className="text-muted">
           Enter your party size
           </Form.Text>

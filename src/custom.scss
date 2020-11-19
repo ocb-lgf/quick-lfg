@@ -41,6 +41,11 @@ $theme-colors: (
   z-index: 100;
 }
 
+.slot-count {
+  font-size: 1.3rem;
+  align-self: flex-end;
+}
+
 .chatbox {
   height: 20rem;
   overflow-y: auto;

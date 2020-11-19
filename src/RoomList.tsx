@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import firebase from "firebase/app";
 import { Room, User } from "./types";
-import { Col, Container, Row, ListGroup, ListGroupItem, Button, InputGroup, FormControl, Form } from 'react-bootstrap';
+import { Col, Container, Row, ListGroup, ListGroupItem, Button, InputGroup, FormControl, Form, Image } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { FaSearch, FaTimes } from "react-icons/fa";
-
+import slot_filled from "./assets/slot-filled.svg"
+import slot_empty from "./assets/slot-empty.svg"
 
 export default function RoomList() {
   const history = useHistory();
@@ -73,34 +74,46 @@ export default function RoomList() {
   const hours = minutes * 60;
   const days = hours * 24;
 
-  function timeText(e: any) {
+  function timeText(e: any, order: number) {
     let currentTime = new Date();
-    let postedTime = new Date(e.seconds * 1000);
-    const ms = (Date.parse(currentTime as unknown as string) - Date.parse(postedTime as unknown as string));
+    let givenTime = new Date(e.seconds * 1000);
+    let ms;
+
+    if (order === 0) {
+      ms = (Date.parse(currentTime as unknown as string) - Date.parse(givenTime as unknown as string));
+    } else {
+      ms = (Date.parse(givenTime as unknown as string) - Date.parse(currentTime as unknown as string))
+    }
 
     if ((ms / seconds) < 2) {
-      return "second";
+      return "s";
     } else if ((ms / seconds) < 60) {
-      return "seconds";
+      return "s";
     } else if ((ms / minutes) < 2) {
-      return "minute";
+      return "m";
     } else if ((ms / minutes) < 60) {
-      return "minutes";
+      return "m";
     } else if ((ms / hours) < 2) {
-      return "hour";
+      return "h";
     } else if ((ms / hours) < 24) {
-      return "hours";
+      return "h";
     } else if ((ms / days) < 2) {
-      return "day";
+      return "d";
     } else if ((ms / days) > 2) {
-      return "days";
+      return "d";
     }
   }
 
-  function timeNumber(e: any) {
+  function timeNumber(e: any, order: number) {
     let currentTime = new Date();
-    let postedTime = new Date(e.seconds * 1000);
-    const ms = (Date.parse(currentTime as unknown as string) - Date.parse(postedTime as unknown as string));
+    let givenTime = new Date(e.seconds * 1000);
+    let ms;
+
+    if (order === 0) {
+      ms = (Date.parse(currentTime as unknown as string) - Date.parse(givenTime as unknown as string));
+    } else {
+      ms = (Date.parse(givenTime as unknown as string) - Date.parse(currentTime as unknown as string))
+    }
 
     if (((ms / seconds) < 2) || ((ms / seconds) < 60)) {
       return Math.floor(ms / seconds);
@@ -118,42 +131,27 @@ export default function RoomList() {
     let currentTime = new Date();
     let expireTime = new Date(e.seconds * 1000);
     const ms = (Date.parse(expireTime as unknown as string) - Date.parse(currentTime as unknown as string));
-    let text;
-    let timeNum;
+    let text = timeText(e, 1);
+    let timeNum = timeNumber(e, 1);
 
-    if (((ms / seconds) < 2) || ((ms / seconds) < 60)) {
-      timeNum = Math.floor(ms / seconds);
-    } else if (((ms / minutes) < 2) || ((ms / minutes) < 60)) {
-      timeNum = Math.floor(ms / minutes);
-    } else if (((ms / hours) < 2) || ((ms / days) < 2)) {
-      timeNum = Math.floor(ms / hours);
-    } else if (((ms / days) < 2) || ((ms / days) > 2)) {
-      timeNum = Math.floor(ms / days);
-    }
 
-    if ((ms / seconds) < 2) {
-      text = "second";
-    } else if ((ms / seconds) < 60) {
-      text = "seconds";
-    } else if ((ms / minutes) < 2) {
-      text = "minute";
-    } else if ((ms / minutes) < 60) {
-      text = "minutes";
-    } else if ((ms / hours) < 2) {
-      text = "hour";
-    } else if ((ms / hours) < 24) {
-      text = "hours";
-    } else if ((ms / days) < 2) {
-      text = "day";
-    } else if ((ms / days) > 2) {
-      text = "days";
-    }
 
     if (Math.sign(ms) === -1) {
       return "Expired.";
-    } else return ("" + timeNum + " " + text + " left.");
+    } else return ("" + timeNum + text + " left");
   }
 
+  function iconList(total: number, filled: string[]) {
+    let icons = [<Image className="mt-1" src={slot_filled} title={filled[0]} style={{ height: 25 }} />];
+
+    for (let i = 1; i < filled.length; i++) {
+      icons.push(<Image className="mt-1" src={slot_filled} title={filled[i]} style={{ height: 25}} />)
+    }
+    for (let i = 0; i < (total - filled.length); i++) {
+      icons.push(<Image className="mt-1 ml-1" src={slot_empty} style={{ height: 25}} />)
+    }
+    return icons;
+  }
 
   const list = (chosenRoom: Room[]) => chosenRoom.map((room: Room) => (
     <Link key={room.rid} to={'/instance/' + room.rid}>
@@ -182,8 +180,16 @@ export default function RoomList() {
                 <Col className="d-flex justify-content-end">{room.username}</Col>
               </Row>
               <Row>
-                <Col xs={8} className="d-flex justify-content-start text-left">Slots: {room.filledSlots.length} of {room.totalSlots}</Col>
-                <Col className="d-flex justify-content-end">{timeNumber(room.time)} {timeText(room.time)} ago.</Col>
+                <Col xs={8} className="d-flex justify-content-start text-left">
+                  {room.totalSlots < 7 && iconList(room.totalSlots, room.joinedPlayers)}
+                  {room.totalSlots >= 7 && <Form.Text className="mt-1 d-flex flex-row">
+                    <span className="slot-count">{room.filledSlots.length}</span>
+                    <Image className="mt-2 ml-1" src={slot_filled} style={{ height: 25}}/>
+                  <Image className="ml-2 mr-1 mt-2" src={slot_empty} style={{ height: 25}} />
+                  <span className="slot-count">{room.totalSlots - room.filledSlots.length}</span>
+                  </Form.Text>}
+                </Col>
+                <Col className="d-flex justify-content-end">{timeNumber(room.time, 0)}{timeText(room.time, 0)} ago</Col>
               </Row>
             </Col>
           </Row>
