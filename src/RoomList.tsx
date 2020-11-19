@@ -23,9 +23,13 @@ export default function RoomList() {
   useEffect(() => {
     const collection = firebase.firestore().collection('rooms').orderBy('timeLimit', 'asc');
     return collection.onSnapshot((snapshot) => {
-      setRooms(snapshot.docs.map(d => ({
-        ...d.data()
-      })) as Room[]);
+      const r = snapshot.docs.map(d => d.data() as Room);
+      setRooms(r.filter(r => {
+        if (r.timeLimit && r.timeLimit?.toDate() < new Date()) {
+          return false;
+        }
+        return true;
+      }));
     });
   }, [search, searchPlatforms]);
 
@@ -62,11 +66,6 @@ export default function RoomList() {
           });
           if ((owner && owner.blockedPlayers.includes(user.uid))
             || (user && owner && user.blockedPlayers.includes(owner.uid))) {
-            return false;
-          }
-          return true;
-        }).filter(r => {
-          if (r.timeLimit && r.timeLimit?.toDate() < new Date()) {
             return false;
           }
           return true;
