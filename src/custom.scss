@@ -54,6 +54,11 @@ $theme-colors: (
   height: 35px;
 }
 
+.settings-input {
+  width: 40%;
+  margin-bottom: 0.7rem;
+}
+
 .chatbox {
   height: 20rem;
   overflow-y: auto;

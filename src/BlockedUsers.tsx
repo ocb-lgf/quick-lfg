@@ -32,7 +32,7 @@ export default function BlockedUsers({ uid }: IProps) {
     }
 
     return blockedUsers ?
-        <Table striped variant='dark'>
+        <Table className="mt-3" striped variant='dark'>
             <thead>
                 <tr>
                     <td style={{ width: 'auto' }}>Blocked Users</td>

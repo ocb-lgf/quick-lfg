@@ -238,7 +238,7 @@ export default function RoomList() {
                   <Button variant="secondary" onClick={() => setOpen(!open)}><FaSearch style={{ marginBottom: 3 }} /></Button>
                 </InputGroup.Append>
               </InputGroup>
-              <Row className="d-flex justify-content-around" style={{ marginBottom: 15 }}>
+              <Row className="d-flex flex-row justify-content-center" style={{ marginBottom: 15 }}>
                 <Form.Check type="checkbox" inline label="PSN" id={`inline-checkbox-1`} name="psn" onChange={() => { checkPlatform("psn"); }} />
                 <Form.Check type="checkbox" inline label="Xbox" id={`inline-checkbox-2`} name="xbox" onChange={() => { checkPlatform("xbox"); }} />
                 <Form.Check type="checkbox" inline label="Switch" id={`inline-checkbox-3`} name="switch" onChange={() => { checkPlatform("switch"); }} />
