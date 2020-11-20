@@ -17,7 +17,7 @@ const history = createBrowserHistory();
 function App() {
     const { width } = useWindowSize();
     const [user, setUser] = useState<User>();
-    document.title = "Fast LFG";
+    document.title = "Quick LFG";
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged(u => {
@@ -41,7 +41,7 @@ function App() {
             variant="dark"
             className="justify-content-center">
             <Link to="/list">
-                <Navbar.Brand className="text-white">Fast LFG</Navbar.Brand>
+                <Navbar.Brand className="text-white">Quick LFG</Navbar.Brand>
             </Link>
             <Nav variant="pills">
                 <Nav.Item>
