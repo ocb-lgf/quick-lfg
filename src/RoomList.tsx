@@ -150,10 +150,10 @@ export default function RoomList() {
     let icons = [<Image key={-1} className="mt-1" src={slot_filled} title={filled[0]} style={iconStyle} />];
 
     for (let i = 1; i < filled.length; i++) {
-      icons.push(<Image key={i} className="mt-1 ml-1" src={slot_filled} title={filled[i]} style={iconStyle} />);
+      icons.push(<Image key={'f' + i} className="mt-1 ml-1" src={slot_filled} title={filled[i]} style={iconStyle} />);
     }
     for (let i = 0; i < (total - filled.length); i++) {
-      icons.push(<Image key={i} className="mt-1 ml-1" src={slot_empty} style={iconStyle} />);
+      icons.push(<Image key={'e' + i} className="mt-1 ml-1" src={slot_empty} style={iconStyle} />);
     }
     return icons;
   }

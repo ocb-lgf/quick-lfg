@@ -65,7 +65,7 @@ export default function Instance() {
             for (let index = 0; index < room.totalSlots; index++) {
                 let ign;
                 if (players[index]) {
-                    ign = players[index][room.platform as keyof User] !== '' ?
+                    ign = players[index][room.platform as keyof User] ?
                         room.platform + ' - ' + players[index][room.platform as keyof User]
                         :
                         'generic - ' + players[index].displayName;
@@ -94,12 +94,17 @@ export default function Instance() {
 
     function handleKick(playerToKick: string) {
         if (room) {
-            room.filledSlots = room.filledSlots.filter(s => s !== playerToKick);
-            setRoom({
-                ...room,
-                filledSlots: room.filledSlots
+            const usersCollection = firebase.firestore().collection('users');
+
+            usersCollection.doc(playerToKick).get().then(d => {
+                const u = d.data() as User;
+                room.filledSlots = room.filledSlots.filter(s => s !== playerToKick);
+                room.joinedPlayers = room.joinedPlayers.filter(s => s !== u.displayName);
+                setRoom({
+                    ...room,
+                });
+                roomsCollection.doc(room.rid).set(room);
             });
-            roomsCollection.doc(room.rid).set(room, { merge: true });
         }
     }
 
