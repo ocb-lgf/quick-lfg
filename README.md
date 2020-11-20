@@ -1,46 +1,37 @@
-# Getting Started with Create React App
+# Quick LFG - A universal looking for group application.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the source code for our universal looking for group web application. It's built with React, TypeScript, SCSS, Firebase, and React Bootstrap component library.
 
-## Available Scripts
+This was made as our final project for AW Academy Online Coding Bootcamp.
 
-In the project directory, you can run:
+## Instructions
 
-### `yarn start`
+If you wanna run it yourself, follow these steps.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Create a Firebase web-app
+2. Clone the repo
+3. Create src/firebaseConfig.ts and export your Firebase-secret as firebaseConfig
+4. Run `npm install`
+5. Run `npm start`
+6. Enjoy!
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## More stuff
 
-### `yarn test`
+Since this is based on Create React App, you have the usual available scripts to you, like:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `npm start`
+- `npm test`
+- `npm build`
+- `npm eject` (Don't do this unless you know what you're doing!)
 
-### `yarn build`
+Please refer to the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started) for more information!
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Credits
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- [Nebez Kassem](https://nabaxo.io)
+- [Miro Baas](https://github.com/MiroBaas)
+- [Oliver W. Schulze](https://github.com/OddlyW)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## License
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Quick LGG is open source software [licensed as MIT](https://github.com/facebook/create-react-app/blob/master/LICENSE).
