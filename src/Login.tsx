@@ -4,7 +4,6 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { User } from './types';
 import { useHistory } from 'react-router-dom';
 
-
 export default function Login() {
     const history = useHistory();
 
@@ -30,5 +29,6 @@ export default function Login() {
         },
     };
 
-    return <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />;
+    return <StyledFirebaseAuth className="mt-5" uiConfig={uiConfig} firebaseAuth={firebase.auth()} />;
+
 }
