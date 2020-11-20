@@ -53,17 +53,12 @@ function App() {
                     <>
                         <Nav.Item>
                             <Nav.Link as={NavLink} to='/new-post' activeClassName="active">
-                                Post New
+                                Post
                         </Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
                             <Nav.Link as={NavLink} to='/settings' activeClassName="active">
                                 Settings
-                        </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                            <Nav.Link onClick={() => firebase.auth().signOut()}>
-                                Log out
                         </Nav.Link>
                         </Nav.Item>
                     </>

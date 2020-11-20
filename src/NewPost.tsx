@@ -115,7 +115,6 @@ export default function NewPost(props: IProps) {
               </Form.Control>
               <Form.Control type="text" name="username" value={room.username}
                 onChange={handleChange}
-                placeholder="username"
                 className="display-name-setting"
                 disabled
               />
@@ -130,7 +129,7 @@ export default function NewPost(props: IProps) {
             <Form.Control type="text" name="game" value={room.game}
               onChange={handleChange}
               required
-              placeholder="game" />
+              placeholder="Game..." />
             <Form.Text className="text-muted">
               Enter the name of your game.
           </Form.Text>
@@ -144,7 +143,7 @@ export default function NewPost(props: IProps) {
               maxLength={115}
               required
               onChange={handleChange}
-              placeholder="title" />
+              placeholder="Description..." />
             <Form.Text className="text-muted">
               Enter the title of your post.
           </Form.Text>
