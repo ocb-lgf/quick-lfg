@@ -35,9 +35,7 @@ $theme-colors: (
 }
 
 .fab {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
+  display: none;
   z-index: 100;
 }
 
@@ -49,6 +47,11 @@ $theme-colors: (
 .display-name-setting {
   margin-left: 1rem;
   margin-right: 5rem;
+}
+
+.platform-icons {
+  width: 35px;
+  height: 35px;
 }
 
 .chatbox {
@@ -95,9 +98,10 @@ label[for="ui-sign-in-name-input"]::before {
     margin-bottom: 5rem;
   }
   .fab {
+    display: block;
     position: fixed;
-    bottom: 5rem;
-    right: 2.4rem;
+    bottom: 5.5rem;
+    right: 1.7rem;
   }
 
   .display-name-setting {

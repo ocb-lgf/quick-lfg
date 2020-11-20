@@ -11,9 +11,11 @@ import psIcon from './assets/playstation.svg';
 import pcIcon from './assets/pc.svg';
 import xboxIcon from './assets/xbox.svg';
 import switchIcon from './assets/switch.svg';
+import useWindowSize from './useWindowSize';
 
 export default function RoomList() {
   const history = useHistory();
+  const { width } = useWindowSize();
 
   const [rooms, setRooms] = useState<Room[]>();
   const [search, setSearch] = useState<string>("");
@@ -161,42 +163,35 @@ export default function RoomList() {
   const list = (chosenRoom: Room[]) => chosenRoom.map((room: Room) => (
     <Link key={room.rid} to={'/instance/' + room.rid}>
       <ListGroupItem action>
-        <Container>
-          <Row>
-            <Col xs={2} className="d-flex justify-content-start align-items-center">
-              <div>
-                {room.platform.toLowerCase() === "psn" && <img style={{ width: "40px", height: "40px" }} alt="PS" src={psIcon} />}
-                {room.platform.toLowerCase() === "xbox" && <img style={{ width: "35px", height: "35px" }} alt="Xbox" src={xboxIcon} />}
-                {room.platform.toLowerCase() === "switch" && <img style={{ width: "45px", height: "45px" }} alt="Switch" src={switchIcon} />}
-                {room.platform.toLowerCase() === "pc" && <img style={{ width: "35px", height: "35px" }} alt="PC" src={pcIcon} />}
-                <br />
-                {room.platform === "psn" && "PSN"}
-                {room.platform === "xbox" && "XBox"}
-                {room.platform === "switch" && "Switch"}
-                {room.platform === "pc" && "PC"}
-              </div>
+        <Container className="p-0">
+          <Row className="px-sm-0 py-0">
+            <Col xs={2} className="d-flex flex-column justify-content-center align-items-center">
+              {room.platform.toLowerCase() === "psn" && <img className="platform-icons" alt="PS" src={psIcon} />}
+              {room.platform.toLowerCase() === "xbox" && <img className="platform-icons" alt="Xbox" src={xboxIcon} />}
+              {room.platform.toLowerCase() === "switch" && <img className="platform-icons" alt="Switch" src={switchIcon} />}
+              {room.platform.toLowerCase() === "pc" && <img className="platform-icons" alt="PC" src={pcIcon} />}
+              {room.platform === "psn" && <p>PSN</p>}
+              {room.platform === "xbox" && <p>XBox</p>}
+              {room.platform === "switch" && <p>Switch</p>}
+              {room.platform === "pc" && <p>PC</p>}
             </Col>
-            <Col>
-              <Row>
-                <Col xs={8} className="d-flex justify-content-start text-left font-weight-bold">{room.game}</Col>
-                <Col className="d-flex justify-content-end">{timeExpires(room.timeLimit)}</Col>
+            <Col xs={6} className="ml-3">
+              <Row className="font-weight-bold">{room.game}</Row>
+              <Row className="font-weight-lighter font-italic">{room.title.length > 38 && width < 576 ? room.title.slice(0, 38).trimEnd() + "..." : room.title}</Row>
+              <Row className="text-left">
+                {room.totalSlots < 6 && iconList(room.totalSlots, room.joinedPlayers)}
+                {room.totalSlots >= 6 && <Form.Text className="mt-1 d-flex flex-row">
+                  <span className="slot-count">{room.filledSlots.length}</span>
+                  <Image className="ml-1" src={slot_filled} style={iconStyle} />
+                  <Image className="ml-2 mr-1" src={slot_empty} style={iconStyle} />
+                  <span className="slot-count">{room.totalSlots - room.filledSlots.length}</span>
+                </Form.Text>}
               </Row>
-              <Row>
-                <Col xs={8} className="d-flex justify-content-start text-left font-weight-lighter font-italic">{room.title}</Col>
-                <Col className="d-flex justify-content-end">{room.username}</Col>
-              </Row>
-              <Row>
-                <Col xs={8} className="d-flex justify-content-start text-left">
-                  {room.totalSlots < 7 && iconList(room.totalSlots, room.joinedPlayers)}
-                  {room.totalSlots >= 7 && <Form.Text className="mt-1 d-flex flex-row">
-                    <span className="slot-count">{room.filledSlots.length}</span>
-                    <Image className="ml-1" src={slot_filled} style={iconStyle} />
-                    <Image className="ml-2 mr-1" src={slot_empty} style={iconStyle} />
-                    <span className="slot-count">{room.totalSlots - room.filledSlots.length}</span>
-                  </Form.Text>}
-                </Col>
-                <Col className="d-flex justify-content-end">{timeNumber(room.time, 0)}{timeText(room.time, 0)} ago</Col>
-              </Row>
+            </Col>
+            <Col xs={3} className="flex-column justify-content-between text-right px-1">
+              <p className="p-0">{timeExpires(room.timeLimit)}</p>
+              <p className="p-0">{room.username}</p>
+              <p className="p-0">{timeNumber(room.time, 0)}{timeText(room.time, 0)} ago</p>
             </Col>
           </Row>
         </Container>
