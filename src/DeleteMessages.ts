@@ -10,8 +10,6 @@ export default function DeleteMessages(rid: string, uid: string) {
             const ref = collection.doc(doc.id);
             batch.update(ref, { message: 'This message has been deleted.' });
         });
-        batch.commit().then(() => {
-            console.log('success?');
-        });
+        batch.commit();
     });
 }
