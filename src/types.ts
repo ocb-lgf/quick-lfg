@@ -28,6 +28,7 @@ export interface ChatMessage {
     mid: string;
     message: string;
     username: string;
+    uid: string;
     time: firebase.firestore.Timestamp;
 }
 

@@ -13,10 +13,12 @@ export default function Chat({ rid }: IProps) {
   const collection = firebase.firestore().collection("rooms").doc(rid).collection("chat");
   const date = firebase.firestore.Timestamp.fromDate(new Date());
   const username = firebase.auth().currentUser?.displayName;
+  const uid = firebase.auth().currentUser?.uid;
   const [message, setMessage] = useState<ChatMessage>({
     mid: '',
     message: '',
     username: '',
+    uid: '',
     time: date
   });
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -34,12 +36,13 @@ export default function Chat({ rid }: IProps) {
   function handleChange(event: ChangeEvent<any>) {
     const target = event.target;
     const value = target.value;
-    if (username) {
+    if (username && uid) {
       const message: ChatMessage = {
         mid: uuid(),
         message: value,
         username: username,
-        time: firebase.firestore.Timestamp.fromDate(new Date())
+        uid: uid,
+        time: firebase.firestore.Timestamp.fromDate(new Date()),
       };
       setMessage(message);
     }
@@ -54,6 +57,7 @@ export default function Chat({ rid }: IProps) {
         mid: '',
         message: '',
         username: '',
+        uid: '',
         time: date
       });
     }
