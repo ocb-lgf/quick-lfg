@@ -5,6 +5,7 @@ import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotr
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
 import Chat from "./Chat";
+import DeleteMessages from './DeleteMessages';
 
 interface ParamTypes {
     id: string;
@@ -117,6 +118,7 @@ export default function Instance() {
                 room.bannedPlayers.push(playerToBlock);
             }
             handleKick(playerToBlock);
+            DeleteMessages(id, playerToBlock);
             usersCollection.doc(owner.uid).set(owner, { merge: true });
             roomsCollection.doc(id).set(room, { merge: true });
         }
@@ -130,6 +132,7 @@ export default function Instance() {
                 room.bannedPlayers.push(playerToBan);
             }
             handleKick(playerToBan);
+            DeleteMessages(id, playerToBan);
             roomsCollection.doc(id).set(room, { merge: true });
         }
     }
