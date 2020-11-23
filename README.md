@@ -34,4 +34,4 @@ Please refer to the [Create React App documentation](https://facebook.github.io/
 
 ## License
 
-Quick LGG is open source software [licensed as MIT](https://github.com/facebook/create-react-app/blob/master/LICENSE).
+Quick LFG is open source software [licensed as MIT](https://github.com/facebook/create-react-app/blob/master/LICENSE).
