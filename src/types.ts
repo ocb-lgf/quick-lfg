@@ -30,6 +30,7 @@ export interface ChatMessage {
     username: string;
     uid: string;
     time: firebase.firestore.Timestamp;
+    isDeleted: boolean;
 }
 
 export type platform = 'psn' | 'xbox' | 'switch' | 'pc' | 'none';

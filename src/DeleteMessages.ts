@@ -8,7 +8,7 @@ export default function DeleteMessages(rid: string, uid: string) {
 
         r.docs.forEach(doc => {
             const ref = collection.doc(doc.id);
-            batch.update(ref, { message: 'This message has been deleted.' });
+            batch.update(ref, { message: 'This message has been deleted.', isDeleted: true });
         });
         batch.commit();
     });

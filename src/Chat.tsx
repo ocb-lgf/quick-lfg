@@ -19,7 +19,8 @@ export default function Chat({ rid }: IProps) {
     message: '',
     username: '',
     uid: '',
-    time: date
+    time: date,
+    isDeleted: false,
   });
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
@@ -43,6 +44,7 @@ export default function Chat({ rid }: IProps) {
         username: username,
         uid: uid,
         time: firebase.firestore.Timestamp.fromDate(new Date()),
+        isDeleted: false,
       };
       setMessage(message);
     }
@@ -58,7 +60,8 @@ export default function Chat({ rid }: IProps) {
         message: '',
         username: '',
         uid: '',
-        time: date
+        time: date,
+        isDeleted: false,
       });
     }
   }
@@ -75,7 +78,9 @@ export default function Chat({ rid }: IProps) {
       <Col className="chatbox">
         {messages && messages.length !== 0 && messages.map(m =>
           <Row key={m.mid} className="d-flex justify-content-start">
-            <Col><span className="text-muted">{m.time.toDate().toLocaleTimeString()}</span> - <span className="text-primary">{m.username}:</span> {m.message}</Col>
+            <Col>
+              <span className="text-muted">{m.time.toDate().toLocaleTimeString()}</span> - <span className="text-primary">{m.username}:</span> <span className={m.isDeleted ? "text-muted" : ""}>{m.message}</span>
+            </Col>
           </Row>
         )}
         <Row ref={bottomRef} className="chat-bottom"></Row>
