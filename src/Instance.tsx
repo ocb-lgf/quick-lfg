@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, useHistory, useParams } from 'react-router';
+import { Link } from "react-router-dom";
 import firebase from 'firebase/app';
-import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav } from 'react-bootstrap';
+import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav, Modal } from 'react-bootstrap';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
 import Chat from "./Chat";
 import DeleteMessages from './DeleteMessages';
+import DeleteRooms from './DeleteRoom';
 
 interface ParamTypes {
     id: string;
@@ -21,13 +23,18 @@ export default function Instance() {
     const [players, setPlayers] = useState<User[]>([]);
     const [showTab, setShowTab] = useState('joined');
     const [bannedUsers, setBannedUsers] = useState<User[]>();
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     useEffect(() => {
         const collection = firebase.firestore().collection('rooms');
         return collection.doc(id).onSnapshot(d => {
-            setRoom(d.data() as Room);
+            if (d.data()) {
+                setRoom(d.data() as Room);
+            } else {
+                history.push('/list');
+            }
         });
-    }, [id]);
+    }, [id, history]);
 
     useEffect(() => {
         if (room) {
@@ -179,7 +186,21 @@ export default function Instance() {
         }
     }
 
-    function joinLeaveButtons() {
+    function deleteModal() {
+        return (
+            <Modal centered size="sm" show={confirmDelete} animation={false} onHide={() => setConfirmDelete(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title className="text-black-50">Are you sure?</Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                    <Link to="/list"><Button variant="danger" onClick={() => DeleteRooms(id)}>Delete</Button></Link>
+                    <Button variant="secondary" onClick={() => setConfirmDelete(false)}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
+    function joinLeaveDeleteButtons() {
         let button = <div></div>;
 
         if (room && owner && user) {
@@ -188,6 +209,9 @@ export default function Instance() {
             }
             else if (owner.uid !== user.uid) {
                 button = <Button className="btn-danger" onClick={handleLeave}>Leave</Button>;
+            }
+            else if (owner.uid === user.uid) {
+                button = <Button className="btn-danger" onClick={() => setConfirmDelete(true)}>Delete room!</Button>;
             }
         }
 
@@ -240,6 +264,7 @@ export default function Instance() {
         }
         else if (room && user && owner) {
             result = (<>
+                {deleteModal()}
                 <Jumbotron fluid className="bg-secondary px-3 py-3">
                     <Jumbotron className="d-flex justify-content-center bg-warning py-3">
                         <h2>{room.title}</h2>
@@ -282,7 +307,7 @@ export default function Instance() {
                     )}
                     {showTab === 'joined' && joinedPlayers}
                     {showTab === 'banned' && bannedPlayers}
-                    {joinLeaveButtons()}
+                    {joinLeaveDeleteButtons()}
                 </Container>
                 {room.filledSlots.includes(user.uid) && <Chat rid={id} />}
             </>);
