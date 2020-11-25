@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import firebase from 'firebase/app';
 import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav, Modal } from 'react-bootstrap';
 import { FaCrown } from 'react-icons/fa';
+import useWindowSize from './useWindowSize';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
 import Chat from "./Chat";
@@ -19,6 +20,7 @@ export default function Instance() {
     let { id } = useParams<ParamTypes>();
     const user = firebase.auth().currentUser;
     const history = useHistory();
+    const { width } = useWindowSize();
     const roomsCollection = firebase.firestore().collection('rooms');
     const owner = useOwner(id);
     const [room, setRoom] = useState<Room>();
@@ -67,39 +69,6 @@ export default function Instance() {
             return `Starts in ${deltaTime.getUTCHours()}h ${deltaTime.getUTCMinutes() % 60}m`;
         }
         return null;
-    }
-
-    function populateSlots() {
-        if (room) {
-            let slots = [];
-            for (let index = 0; index < room.totalSlots; index++) {
-                let ign;
-                if (players[index]) {
-                    ign = players[index][room.platform as keyof User] ?
-                        prettyPlatform(room.platform) + ' - ' + players[index][room.platform as keyof User]
-                        :
-                        'generic - ' + players[index].displayName;
-                }
-                slots.push(
-                    <tr key={index}>
-                        <td>{index + 1}</td>
-                        {index === 0 ? <td>{ign} <FaCrown color="gold" className="mb-1 mr-2" /></td> : <td>{ign}</td>}
-                        {(user && owner && owner.uid === user.uid) &&
-                            players[index] && players[index].uid !== user.uid ? (
-                                <td>
-                                    <InputGroup className="justify-content-between">
-                                        <Button className="btn-danger" onClick={() => handleBlock(players[index].uid)}>Block</Button>
-                                        <Button className="btn-warning" onClick={() => handleBan(players[index].uid)}>Ban</Button>
-                                        <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
-                                    </InputGroup>
-                                </td>
-                            ) : (
-                                <td></td>
-                            )}
-                    </tr>);
-            }
-            return slots;
-        }
     }
 
     function handleKick(playerToKick: string) {
@@ -220,6 +189,56 @@ export default function Instance() {
         return button;
     }
 
+    function populateSlots() {
+        if (room) {
+            let slots = [];
+            for (let index = 0; index < room.totalSlots; index++) {
+                let ign;
+                if (players[index]) {
+                    ign = players[index][room.platform as keyof User] ?
+                        prettyPlatform(room.platform) + ' - ' + players[index][room.platform as keyof User]
+                        :
+                        'generic - ' + players[index].displayName;
+                }
+                slots.push(
+                    <><tr key={index}>
+                        <td>{index + 1}</td>
+                        {index === 0 ? <td>{ign} <FaCrown color="gold" className="mb-1 mr-2" /></td> : <td>{ign}</td>}
+                        {(user && owner && owner.uid === user.uid) &&
+                            players[index] && players[index].uid !== user.uid &&
+                            (width >= 576) ? (
+                                <td>
+                                    <InputGroup className="justify-content-end">
+                                        <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
+                                        <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
+                                        <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                    </InputGroup>
+                                </td>
+                            ) : (
+                                <td></td>
+                            )}
+                    </tr>
+                        {(user && owner && owner.uid === user.uid) &&
+                            players[index] && players[index].uid !== user.uid &&
+                            (width < 576) ? (
+                                <tr key={index + 'buttons'}>
+                                    <td colSpan={3}>
+                                        <InputGroup className="justify-content-end">
+                                            <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
+                                            <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
+                                            <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                        </InputGroup>
+                                    </td>
+                                </tr>
+                            ) : (
+                                null
+                            )}
+                    </>);
+            }
+            return slots;
+        }
+    }
+
     const joinedPlayers = (
         <Table striped variant='dark'>
             <thead>
@@ -229,7 +248,7 @@ export default function Instance() {
                 <tr>
                     <th style={{ width: '1rem' }}>#</th>
                     <th style={{ width: 'auto' }}>Player</th>
-                    {owner && user && owner.uid === user.uid && <th style={{ width: '13rem' }}></th>}
+                    {owner && user && owner.uid === user.uid && width > 576 && <th></th>}
                 </tr>
             </thead>
             <tbody>
