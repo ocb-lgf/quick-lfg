@@ -167,6 +167,7 @@ export default function Instance() {
         if (room) {
             let slots = [];
             for (let index = 0; index < room.totalSlots; index++) {
+                let isOwner = ((user && owner && owner.uid === user.uid) && players[index] && players[index].uid !== user.uid) ? true : false;
                 let ign;
                 if (players[index]) {
                     ign = players[index][room.platform as keyof User] ?
@@ -175,39 +176,35 @@ export default function Instance() {
                         'generic - ' + players[index].displayName;
                 }
                 slots.push(
-                    <><tr key={index}>
+                    <React.Fragment key={index}><tr>
                         <td>{index + 1}</td>
                         <td>{ign}</td>
-                        {(user && owner && owner.uid === user.uid) &&
-                            players[index] && players[index].uid !== user.uid &&
-                            (width >= 576) ? (
-                                <td>
+                        {isOwner && (width >= 576) ? (
+                            <td>
+                                <InputGroup className="justify-content-end">
+                                    <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
+                                    <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
+                                    <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                </InputGroup>
+                            </td>
+                        ) : (
+                                <td></td>
+                            )}
+                    </tr>
+                        {isOwner && (width < 576) ? (
+                            <tr>
+                                <td colSpan={3}>
                                     <InputGroup className="justify-content-end">
                                         <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
                                         <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
                                         <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
                                     </InputGroup>
                                 </td>
-                            ) : (
-                                <td></td>
-                            )}
-                    </tr>
-                        {(user && owner && owner.uid === user.uid) &&
-                            players[index] && players[index].uid !== user.uid &&
-                            (width < 576) ? (
-                                <tr key={index + 'buttons'}>
-                                    <td colSpan={3}>
-                                        <InputGroup className="justify-content-end">
-                                            <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
-                                            <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
-                                            <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
-                                        </InputGroup>
-                                    </td>
-                                </tr>
-                            ) : (
+                            </tr>
+                        ) : (
                                 null
                             )}
-                    </>);
+                    </React.Fragment>);
             }
             return slots;
         }
@@ -222,7 +219,7 @@ export default function Instance() {
                 <tr>
                     <th style={{ width: '1rem' }}>#</th>
                     <th style={{ width: 'auto' }}>Player</th>
-                    {owner && user && owner.uid === user.uid && width > 576 && <th></th>}
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
