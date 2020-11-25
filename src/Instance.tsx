@@ -83,7 +83,7 @@ export default function Instance() {
                 slots.push(
                     <tr key={index}>
                         <td>{index + 1}</td>
-                        {index === 0 ? <td><FaCrown color="gold" className="mb-1 mr-2" />{ign}</td> : <td>{ign}</td>}
+                        {index === 0 ? <td>{ign} <FaCrown color="gold" className="mb-1 mr-2" /></td> : <td>{ign}</td>}
                         {(user && owner && owner.uid === user.uid) &&
                             players[index] && players[index].uid !== user.uid ? (
                                 <td>
