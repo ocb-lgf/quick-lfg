@@ -3,11 +3,13 @@ import { Redirect, useHistory, useParams } from 'react-router';
 import { Link } from "react-router-dom";
 import firebase from 'firebase/app';
 import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav, Modal } from 'react-bootstrap';
+import { FaCrown } from 'react-icons/fa';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
 import Chat from "./Chat";
 import DeleteMessages from './DeleteMessages';
 import DeleteRooms from './DeleteRoom';
+import prettyPlatform from './PrettyPlatform';
 
 interface ParamTypes {
     id: string;
@@ -74,14 +76,14 @@ export default function Instance() {
                 let ign;
                 if (players[index]) {
                     ign = players[index][room.platform as keyof User] ?
-                        room.platform + ' - ' + players[index][room.platform as keyof User]
+                        prettyPlatform(room.platform) + ' - ' + players[index][room.platform as keyof User]
                         :
                         'generic - ' + players[index].displayName;
                 }
                 slots.push(
                     <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{ign}</td>
+                        {index === 0 ? <td><FaCrown color="gold" className="mb-1 mr-2" />{ign}</td> : <td>{ign}</td>}
                         {(user && owner && owner.uid === user.uid) &&
                             players[index] && players[index].uid !== user.uid ? (
                                 <td>
