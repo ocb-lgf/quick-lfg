@@ -79,7 +79,11 @@ export default function Chat({ rid }: IProps) {
         {messages && messages.length !== 0 && messages.map(m =>
           <Row key={m.mid} className="d-flex justify-content-start">
             <Col>
-              <span className="text-muted">{m.time.toDate().toLocaleTimeString()}</span> - <span className="text-primary">{m.username}:</span> <span className={m.isDeleted ? "text-muted" : ""}>{m.message}</span>
+              <span className="text-muted">
+                {m.time.toDate().toLocaleTimeString()}
+              </span> - <span className="text-primary">{m.username}:</span> <span className={m.isDeleted ? "text-muted" : ""}>
+                {m.isDeleted ? 'This message has been deleted.' : m.message}
+              </span>
             </Col>
           </Row>
         )}
