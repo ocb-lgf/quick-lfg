@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, ChangeEvent } from 'react';
 import { Redirect, useHistory, useParams } from 'react-router';
 import { Link } from "react-router-dom";
 import firebase from 'firebase/app';
-import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav, Modal } from 'react-bootstrap';
+import { Col, Container, Row as ListGroupItem, ListGroup, Table, Button, Jumbotron, InputGroup, Spinner, Nav, Modal, Popover, Overlay } from 'react-bootstrap';
 import { FaCrown } from 'react-icons/fa';
+import { HiDotsVertical } from "react-icons/hi";
 import useWindowSize from './useWindowSize';
 import { Room, User } from "./types";
 import useOwner from "./useOwner";
@@ -28,6 +29,9 @@ export default function Instance() {
     const [showTab, setShowTab] = useState('joined');
     const [bannedUsers, setBannedUsers] = useState<User[]>();
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [popShow, setPopShow] = useState(false);
+    const [popTarget, setPopTarget] = useState(null);
+    const popRef = useRef();
 
     useEffect(() => {
         const collection = firebase.firestore().collection('rooms');
@@ -74,6 +78,7 @@ export default function Instance() {
     function handleKick(playerToKick: string) {
         if (room) {
             const usersCollection = firebase.firestore().collection('users');
+            setPopShow(false);
 
             usersCollection.doc(playerToKick).get().then(d => {
                 const u = d.data() as User;
@@ -189,6 +194,11 @@ export default function Instance() {
         return button;
     }
 
+    function openPopover(event: ChangeEvent<any>) {
+        setPopShow(!popShow);
+        setPopTarget(event.target);
+    }
+
     function populateSlots() {
         if (room) {
             let slots = [];
@@ -199,13 +209,13 @@ export default function Instance() {
                     ign = players[index][room.platform as keyof User] ?
                         prettyPlatform(room.platform) + ' - ' + players[index][room.platform as keyof User]
                         :
-                        'generic - ' + players[index].displayName;
+                        'Generic - ' + players[index].displayName;
                 }
                 slots.push(
                     <React.Fragment key={index}><tr>
                         <td>{index + 1}</td>
-                        {index === 0 ? <td>{ign} <FaCrown color="gold" className="mb-1 mr-2" /></td> : <td>{ign}</td>}
-                        {isOwner && (width >= 576) ? (
+                        {index === 0 ? <td>{ign} <FaCrown color="#fcba03" className="mb-1 mr-2" /></td> : <td>{ign}</td>}
+                        {isOwner && (width >= 576) && (
                             <td>
                                 <InputGroup className="justify-content-end">
                                     <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
@@ -213,23 +223,32 @@ export default function Instance() {
                                     <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
                                 </InputGroup>
                             </td>
-                        ) : (
-                                <td></td>
-                            )}
+                        )}
+                        {isOwner && (width < 576) && (
+                            <>
+                                <td onClick={openPopover} className="text-center"><HiDotsVertical /></td>
+                                <Overlay
+                                    show={popShow}
+                                    target={popTarget}
+                                    transition={false}
+                                    placement="bottom"
+                                    rootClose={true}
+                                    onHide={() => setPopShow(false)}
+                                    container={popRef.current}>
+                                    <Popover id="mod-buttons">
+                                        <Popover.Content>
+                                            <InputGroup className="justify-content-end">
+                                                <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
+                                                <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
+                                                <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
+                                            </InputGroup></Popover.Content>
+                                    </Popover>
+
+                                </Overlay>
+                            </>
+                        )}
+                        {!isOwner && <td></td>}
                     </tr>
-                        {isOwner && (width < 576) ? (
-                            <tr>
-                                <td colSpan={3}>
-                                    <InputGroup className="justify-content-end">
-                                        <Button className="btn-danger mr-2" onClick={() => handleBlock(players[index].uid)}>Block</Button>
-                                        <Button className="btn-warning mr-2" onClick={() => handleBan(players[index].uid)}>Ban</Button>
-                                        <Button className="btn-success" onClick={() => handleKick(players[index].uid)}>Kick</Button>
-                                    </InputGroup>
-                                </td>
-                            </tr>
-                        ) : (
-                                null
-                            )}
                     </React.Fragment>);
             }
             return slots;
@@ -263,7 +282,7 @@ export default function Instance() {
             <tbody>
                 {room && bannedUsers && bannedUsers.map(p => (
                     <tr key={p.uid}>
-                        <td style={{ width: 'auto' }}>{p[room.platform as keyof User] !== '' ? p[room.platform as keyof User] : p.displayName}</td>
+                        <td style={{ width: 'auto' }}>{p[room.platform as keyof User] ? prettyPlatform(room.platform) + ' - ' + p[room.platform as keyof User] : 'Generic - ' + p.displayName}</td>
                         <td style={{ width: '1rem' }}><Button className="btn-success" onClick={() => handleUnban(p.uid)}>Unban</Button></td>
                     </tr>
                 ))}
